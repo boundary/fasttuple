@@ -58,7 +58,24 @@ public class DirectTupleCodeGeneratorTest {
 
     @Test
     public void testIndexedSetAndGet() throws Exception {
-        
+        TupleSchema schema = TupleSchema.builder().
+                addField("a", Long.TYPE).
+                addField("b", Integer.TYPE).
+                addField("c", Short.TYPE).
+                addField("d", Character.TYPE).
+                addField("e", Byte.TYPE).
+                addField("f", Float.TYPE).
+                addField("g", Double.TYPE).
+                build();
+
+        FastTuple tuple = schema.createTuple();
+        assertIndexedGetterAndSetterRoundTrip(tuple, 1, 100L);
+        assertIndexedGetterAndSetterRoundTrip(tuple, 2, 40);
+        assertIndexedGetterAndSetterRoundTrip(tuple, 3, (short)10);
+        assertIndexedGetterAndSetterRoundTrip(tuple, 4, 'j');
+        assertIndexedGetterAndSetterRoundTrip(tuple, 5, (byte)255);
+        assertIndexedGetterAndSetterRoundTrip(tuple, 6, 0.125f);
+        assertIndexedGetterAndSetterRoundTrip(tuple, 7, 0.125);
     }
 
     public void assertGetterAndSetterGenerated(Class clazz, String name, Class type) throws Exception {
@@ -69,5 +86,10 @@ public class DirectTupleCodeGeneratorTest {
     public void assertGetterAndSetterRoundTrip(Object tuple, Class clazz, String name, Class type, Object value) throws Exception {
         clazz.getDeclaredMethod(name, type).invoke(tuple, value);
         assertEquals(value, clazz.getDeclaredMethod(name).invoke(tuple));
+    }
+
+    public void assertIndexedGetterAndSetterRoundTrip(FastTuple tuple, int index, Object value) {
+        tuple.indexedSet(index, value);
+        assertEquals(value, tuple.indexedGet(index));
     }
 }

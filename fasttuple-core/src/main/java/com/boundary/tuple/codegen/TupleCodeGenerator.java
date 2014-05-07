@@ -86,10 +86,11 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
             cd.addDeclaredMethod(generateSetter(name, type, index));
         }
         cd.addDeclaredMethod(generateIndexedGetter());
+        cd.addDeclaredMethod(generateIndexedSetter());
         return cu;
     }
 
-    protected Java.MethodDeclarator generateIndexedGetter() {
+    protected Java.MethodDeclarator generateIndexedGetter() throws CompileException {
          return new Java.MethodDeclarator(
                  loc,
                  null,
@@ -103,9 +104,26 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
          );
     }
 
-    protected abstract List<Java.BlockStatement> generateIndexedGetterImpl(String paramName);
+    protected Java.MethodDeclarator generateIndexedSetter() throws CompileException {
+        return new Java.MethodDeclarator(
+                loc,
+                null,
+                new Java.Modifiers(Mod.PUBLIC),
+                classToType(loc, Void.TYPE),
+                "indexedSet",
+                new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, classToType(loc, Integer.TYPE), "index"),
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, classToType(loc, Object.class), "value")
+                },false),
+                new Java.Type[] {},
+                generateIndexedSetterImpl("index", "value")
+        );
+    }
 
-    protected Java.MethodDeclarator generateGetter(String name, Class type, int index) {
+    protected abstract List<Java.BlockStatement> generateIndexedGetterImpl(String paramName) throws CompileException;
+    protected abstract List<Java.BlockStatement> generateIndexedSetterImpl(String index, String value) throws CompileException;
+
+    protected Java.MethodDeclarator generateGetter(String name, Class type, int index) throws CompileException {
         // unsafe().get* (long)
         Java.BlockStatement st = new Java.ReturnStatement(loc, generateGetInvocation(type, index));
         return new Java.MethodDeclarator(
@@ -121,7 +139,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
     }
 
     protected Java.MethodDeclarator generateSetter(String name, Class type, int index) throws CompileException {
-        Java.BlockStatement st = new Java.ExpressionStatement(generateSetInvocation(type, index));
+        Java.BlockStatement st = new Java.ExpressionStatement(generateSetInvocation(type, index, "value"));
         return new Java.MethodDeclarator(
                 loc,
                 null,
@@ -136,6 +154,6 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         );
     }
 
-    protected abstract Java.MethodInvocation generateGetInvocation(Class type, int index);
-    protected abstract Java.MethodInvocation generateSetInvocation(Class type, int index);
+    protected abstract Java.MethodInvocation generateGetInvocation(Class type, int index) throws CompileException;
+    protected abstract Java.MethodInvocation generateSetInvocation(Class type, int index, String value) throws CompileException;
 }

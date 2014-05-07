@@ -5,4 +5,5 @@ package com.boundary.tuple;
  */
 public abstract class FastTuple {
     public abstract Object indexedGet(int i);
+    public abstract void indexedSet(int i, Object value);
 }
