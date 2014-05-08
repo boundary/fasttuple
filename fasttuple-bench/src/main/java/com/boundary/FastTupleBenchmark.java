@@ -25,6 +25,7 @@
 
 package com.boundary;
 
+import com.boundary.tuple.FastTuple;
 import com.boundary.tuple.TuplePool;
 import com.boundary.tuple.TupleSchema;
 import com.boundary.tuple.unsafe.Coterie;
@@ -86,6 +87,7 @@ public class FastTupleBenchmark {
                 addField("a",Long.TYPE).
                 addField("b",Long.TYPE).
                 addField("c",Long.TYPE).
+                implementInterface(StaticBinding.class).
                 build();
         record2 = schema.createRecord();
         poolSettings.min(1).max(10);
@@ -235,6 +237,33 @@ public class FastTupleBenchmark {
         pool3.release(derp);
     }
 
+    @GenerateMicroBenchmark
+    public void testFastTuplePreAllocIndexedBoxing() throws Exception {
+        FastTuple tuple = schema.createTuple(record2);
+        tuple.indexedSet(1, 100L);
+        tuple.indexedSet(2, 200L);
+        tuple.indexedSet(3, 300L);
+        if ((Long)tuple.indexedGet(1) + (Long)tuple.indexedGet(2) + (Long)tuple.indexedGet(3) == System.nanoTime()) throw new IllegalStateException();
+    }
+
+    @GenerateMicroBenchmark
+    public void testFastTuplePreAllocIndexed() throws Exception {
+        FastTuple tuple = schema.createTuple(record2);
+        tuple.indexedSetLong(1, 100L);
+        tuple.indexedSetLong(2, 200L);
+        tuple.indexedSetLong(3, 300L);
+        if (tuple.indexedGetLong(1) + tuple.indexedGetLong(2) + tuple.indexedGetLong(3) == System.nanoTime()) throw new IllegalStateException();
+    }
+
+    @GenerateMicroBenchmark
+    public void testFastTupleStaticBinding() throws Exception {
+        StaticBinding tuple = (StaticBinding)schema.createTuple(record2);
+        tuple.a(100L);
+        tuple.b(200L);
+        tuple.c(300L);
+        if (tuple.a() + tuple.b() + tuple.c() == System.nanoTime()) throw new IllegalStateException();
+    }
+
     static class Derp {
         public long a;
         public long b;
@@ -247,4 +276,15 @@ public class FastTupleBenchmark {
         }
     }
 
+    public static interface StaticBinding {
+        public void a(long a);
+        public void b(long b);
+        public void c(long c);
+        public long a();
+        public long b();
+        public long c();
+    }
+
 }
+
+

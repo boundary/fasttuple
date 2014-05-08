@@ -42,61 +42,94 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
     }
 
     @Override
-    protected List<Java.BlockStatement> generateIndexedGetterImpl(String paramName) throws CompileException {
-        return Lists.<Java.BlockStatement>newArrayList(
-                new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {paramName}), generateIndexedGetSwitch()),
-                new Java.ThrowStatement(loc, new Java.NewClassInstance(
-                        loc,
-                        null,
-                        new Java.ReferenceType(loc, new String[] {"IllegalArgumentException"}, null),
-                        new Java.Rvalue[0]))
-        );
+    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedGetterImpl() throws CompileException {
+        List<Java.SwitchStatement.SwitchBlockStatementGroup> list = Lists.newArrayList();
+        for (int i=0; i < fieldNames.length; i++) {
+            list.add(
+                    new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
+                            Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
+                            false,
+                            Lists.<Java.BlockStatement>newArrayList(new Java.ReturnStatement(loc,
+                                    generateGetInvocation(fieldTypes[i], indexes[i])))
+                    )
+            );
+        }
+        list.add(generateDefaultCase());
+        return list;
     }
 
     @Override
-    protected List<Java.BlockStatement> generateIndexedSetterImpl(String index, String value) throws CompileException {
-        List<Java.SwitchStatement.SwitchBlockStatementGroup> cases = generateIndexedSetSwitch(value);
-        cases.add(new Java.SwitchStatement.SwitchBlockStatementGroup(loc, Lists.<Java.Rvalue>newArrayList(),true,
-                Lists.< Java.BlockStatement>newArrayList(new Java.ThrowStatement(loc, new Java.NewClassInstance(
-                    loc,
-                    null,
-                    new Java.ReferenceType(loc, new String[] {"IllegalArgumentException"}, null),
-                    new Java.Rvalue[0])))));
-        return Lists.<Java.BlockStatement>newArrayList(
-                new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {index}), cases)
-        );
-    }
-
-    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedGetSwitch() throws CompileException {
-        List list = Lists.newArrayList();
-        for (int i=0; i < fieldNames.length; i++) {
-            list.add(
-                new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
-                        Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
-                        false,
-                        Lists.<Java.BlockStatement>newArrayList(new Java.ReturnStatement(loc,
-                                generateGetInvocation(fieldTypes[i], indexes[i])))
-                )
-            );
+    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedGetterImpl(Class type) throws CompileException {
+        List<Java.SwitchStatement.SwitchBlockStatementGroup> list = Lists.newArrayList();
+        for (int n=0; n < fieldNames.length; n++) {
+            if (!type.equals(fieldTypes[n])) {
+                continue;
+            }
+            list.add(new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
+                    Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, String.valueOf(n+1))),
+                    false,
+                    Lists.<Java.BlockStatement>newArrayList(
+                            new Java.ReturnStatement(loc, generateGetInvocation(type, n))
+                    )
+            ));
         }
+        list.add(generateDefaultCase());
         return list;
     }
 
-    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedSetSwitch(String value) throws CompileException {
-        List list = Lists.newArrayList();
+    @Override
+    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedSetterImpl(String value) throws CompileException {
+        List<Java.SwitchStatement.SwitchBlockStatementGroup> list = Lists.newArrayList();
         for (int i=0; i < fieldNames.length; i++) {
             list.add(
-                new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
-                        Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
-                        false,
-                        Lists.<Java.BlockStatement>newArrayList(
-                                new Java.ExpressionStatement(generateSetInvocation(fieldTypes[i], indexes[i], value)),
-                                new Java.BreakStatement(loc, null)
-                        )
-                )
+                    new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
+                            Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
+                            false,
+                            Lists.<Java.BlockStatement>newArrayList(
+                                    new Java.ExpressionStatement(generateSetInvocation(fieldTypes[i], indexes[i], value)),
+                                    new Java.BreakStatement(loc, null)
+                            )
+                    )
             );
         }
+        list.add(generateDefaultCase());
         return list;
+    }
+
+    @Override
+    protected List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedSetterImpl(String value, Class type) throws CompileException {
+        List<Java.SwitchStatement.SwitchBlockStatementGroup> list = Lists.newArrayList();
+        for (int n=0; n < fieldNames.length; n++) {
+            if (!type.equals(fieldTypes[n])) {
+                continue;
+            }
+            list.add(new Java.SwitchStatement.SwitchBlockStatementGroup(loc,
+                    Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, String.valueOf(n+1))),
+                    false,
+                    Lists.<Java.BlockStatement>newArrayList(
+                            new Java.ExpressionStatement(generateSetInvocation(type, n, value)),
+                            new Java.BreakStatement(loc, null)
+                    )
+            ));
+        }
+        list.add(generateDefaultCase());
+        return list;
+    }
+
+    protected Java.SwitchStatement.SwitchBlockStatementGroup generateDefaultCase() {
+        return new Java.SwitchStatement.SwitchBlockStatementGroup(
+                loc,
+                Lists.<Java.Rvalue>newArrayList(),
+                true,
+                Lists.<Java.BlockStatement>newArrayList(
+                    new Java.ThrowStatement(
+                            loc,
+                            new Java.NewClassInstance(
+                                    loc,
+                                    null,
+                                    new Java.ReferenceType(loc, new String[] {"IllegalArgumentException"}, null),
+                                    new Java.Rvalue[0]))
+        ));
     }
 
     protected Java.MethodInvocation generateGetInvocation(Class type, int index) throws CompileException {
@@ -153,25 +186,4 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
         }
     }
 
-    protected int primIndex(Class type) {
-        if (type.equals(Long.TYPE)) return Java.BasicType.LONG;
-        if (type.equals(Integer.TYPE)) return Java.BasicType.INT;
-        if (type.equals(Short.TYPE)) return Java.BasicType.SHORT;
-        if (type.equals(Character.TYPE)) return Java.BasicType.CHAR;
-        if (type.equals(Byte.TYPE)) return Java.BasicType.BYTE;
-        if (type.equals(Float.TYPE)) return Java.BasicType.FLOAT;
-        if (type.equals(Double.TYPE)) return Java.BasicType.DOUBLE;
-        return 0;
-    }
-
-    protected String primToBox(Class type) {
-        if (type.equals(Long.TYPE)) return "Long";
-        if (type.equals(Integer.TYPE)) return "Integer";
-        if (type.equals(Short.TYPE)) return "Short";
-        if (type.equals(Character.TYPE)) return "Character";
-        if (type.equals(Byte.TYPE)) return "Byte";
-        if (type.equals(Float.TYPE)) return "Float";
-        if (type.equals(Double.TYPE)) return "Double";
-        return null;
-    }
 }

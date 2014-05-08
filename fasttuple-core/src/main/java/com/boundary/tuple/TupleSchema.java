@@ -49,6 +49,7 @@ public class TupleSchema {
         this.layout = new int[size];
         this.widths = new int[size];
         this.padToCacheLine = padToCacheLine;
+        this.iface = iface;
         System.arraycopy(fieldNames, 0, this.fieldNames, 0, fieldNames.length);
         System.arraycopy(fieldTypes, 0, this.fieldTypes, 0, fieldTypes.length);
         generateLayout();
@@ -228,6 +229,10 @@ public class TupleSchema {
 
     public FastTuple createTuple() throws Exception {
         long address = createRecord();
+        return createTuple(address);
+    }
+
+    public FastTuple createTuple(long address) throws Exception {
         generateSchemaAccessor();
         FastTuple tuple = (FastTuple) unsafe.allocateInstance(clazz);
         unsafe.putLong(tuple, addressOffset, address);

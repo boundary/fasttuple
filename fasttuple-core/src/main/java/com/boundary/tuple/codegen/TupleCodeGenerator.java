@@ -10,12 +10,23 @@ import org.codehaus.janino.Mod;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import static java.lang.Character.toUpperCase;
+
 
 /**
  * Created by cliff on 5/3/14.
  */
 public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
     private static AtomicLong counter = new AtomicLong(0l);
+    protected static Class[] types = new Class[] {
+            Long.TYPE,
+            Integer.TYPE,
+            Short.TYPE,
+            Character.TYPE,
+            Byte.TYPE,
+            Float.TYPE,
+            Double.TYPE
+    };
     protected Class iface;
     protected String[] fieldNames;
     protected Class[] fieldTypes;
@@ -87,6 +98,12 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         }
         cd.addDeclaredMethod(generateIndexedGetter());
         cd.addDeclaredMethod(generateIndexedSetter());
+        for (Java.MethodDeclarator method : generateIndexedTypedGetters()) {
+            cd.addDeclaredMethod(method);
+        }
+        for (Java.MethodDeclarator method : generateIndexedTypedSetters()) {
+            cd.addDeclaredMethod(method);
+        }
         return cu;
     }
 
@@ -100,8 +117,52 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                  new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
                          new Java.FunctionDeclarator.FormalParameter(loc,true, classToType(loc, Integer.TYPE), "index")}, false),
                  new Java.Type[] {},
-                 generateIndexedGetterImpl("index")
+                 Lists.<Java.BlockStatement>newArrayList(
+                         new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {"index"}), generateIndexedGetterImpl())
+                 )
          );
+    }
+
+    protected List<Java.MethodDeclarator> generateIndexedTypedGetters() throws CompileException {
+        List<Java.MethodDeclarator> methods = Lists.newArrayList();
+        for (int i=0; i<types.length; i++) {
+            methods.add(new Java.MethodDeclarator(
+                loc,
+                null,
+                new Java.Modifiers(Mod.PUBLIC),
+                new Java.BasicType(loc, primIndex(types[i])),
+                "indexedGet" + capitalize(types[i].getName()),
+                new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index")}, false),
+                new Java.Type[] {},
+                Lists.<Java.BlockStatement>newArrayList(
+                        new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {"index"}), generateIndexedGetterImpl(types[i]))
+                )
+            ));
+        }
+        return methods;
+    }
+
+    protected List<Java.MethodDeclarator> generateIndexedTypedSetters() throws CompileException {
+        List<Java.MethodDeclarator> methods = Lists.newArrayList();
+        for (int i=0; i<types.length; i++) {
+            methods.add(new Java.MethodDeclarator(
+                loc,
+                null,
+                new Java.Modifiers(Mod.PUBLIC),
+                new Java.BasicType(loc, Java.BasicType.VOID),
+                "indexedSet" + capitalize(types[i].getName()),
+                new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index"),
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, primIndex(types[i])), "value")
+                }, false),
+                new Java.Type[] {},
+                Lists.<Java.BlockStatement>newArrayList(
+                        new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {"index"}), generateIndexedSetterImpl("value", types[i]))
+                )
+            ));
+        }
+        return methods;
     }
 
     protected Java.MethodDeclarator generateIndexedSetter() throws CompileException {
@@ -116,12 +177,16 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                         new Java.FunctionDeclarator.FormalParameter(loc, true, classToType(loc, Object.class), "value")
                 },false),
                 new Java.Type[] {},
-                generateIndexedSetterImpl("index", "value")
+                Lists.<Java.BlockStatement>newArrayList(
+                    new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {"index"}), generateIndexedSetterImpl("value"))
+                )
         );
     }
 
-    protected abstract List<Java.BlockStatement> generateIndexedGetterImpl(String paramName) throws CompileException;
-    protected abstract List<Java.BlockStatement> generateIndexedSetterImpl(String index, String value) throws CompileException;
+    protected abstract List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedGetterImpl() throws CompileException;
+    protected abstract List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedGetterImpl(Class type) throws CompileException;
+    protected abstract List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedSetterImpl(String value) throws CompileException;
+    protected abstract List<Java.SwitchStatement.SwitchBlockStatementGroup> generateIndexedSetterImpl(String value, Class type) throws CompileException;
 
     protected Java.MethodDeclarator generateGetter(String name, Class type, int index) throws CompileException {
         // unsafe().get* (long)
@@ -156,4 +221,31 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
 
     protected abstract Java.MethodInvocation generateGetInvocation(Class type, int index) throws CompileException;
     protected abstract Java.MethodInvocation generateSetInvocation(Class type, int index, String value) throws CompileException;
+
+    protected String capitalize(String st) {
+        return String.valueOf(toUpperCase(st.charAt(0))) + st.substring(1);
+    }
+
+
+    protected int primIndex(Class type) {
+        if (type.equals(Long.TYPE)) return Java.BasicType.LONG;
+        if (type.equals(Integer.TYPE)) return Java.BasicType.INT;
+        if (type.equals(Short.TYPE)) return Java.BasicType.SHORT;
+        if (type.equals(Character.TYPE)) return Java.BasicType.CHAR;
+        if (type.equals(Byte.TYPE)) return Java.BasicType.BYTE;
+        if (type.equals(Float.TYPE)) return Java.BasicType.FLOAT;
+        if (type.equals(Double.TYPE)) return Java.BasicType.DOUBLE;
+        return 0;
+    }
+
+    protected String primToBox(Class type) {
+        if (type.equals(Long.TYPE)) return "Long";
+        if (type.equals(Integer.TYPE)) return "Integer";
+        if (type.equals(Short.TYPE)) return "Short";
+        if (type.equals(Character.TYPE)) return "Character";
+        if (type.equals(Byte.TYPE)) return "Byte";
+        if (type.equals(Float.TYPE)) return "Float";
+        if (type.equals(Double.TYPE)) return "Double";
+        return null;
+    }
 }
