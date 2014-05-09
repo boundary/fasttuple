@@ -7,13 +7,13 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by cliff on 5/4/14.
  */
-public class TupleSchemaTest {
+public class DirectTupleSchemaTest {
 
-    public TupleSchemaTest() {}
+    public DirectTupleSchemaTest() {}
 
     @Test
     public void layoutTest() {
-        TupleSchema schema = TupleSchema.builder().
+        DirectTupleSchema schema = TupleSchema.builder().
                 addField("aByte", Byte.TYPE).
                 addField("aChar", Character.TYPE).
                 addField("aInt", Integer.TYPE).
@@ -21,6 +21,7 @@ public class TupleSchemaTest {
                 addField("aFloat", Float.TYPE).
                 addField("aLong", Long.TYPE).
                 addField("aDouble", Double.TYPE).
+                directMemory().
                 build();
 
         //layout should be aLong, aDouble, aInt, aFloat, aChar, aShort, aByte
@@ -40,7 +41,7 @@ public class TupleSchemaTest {
 
     @Test
     public void createRecordTest() {
-        TupleSchema schema = TupleSchema.builder().
+        DirectTupleSchema schema = TupleSchema.builder().
                 addField("aByte", Byte.TYPE).
                 addField("aChar", Character.TYPE).
                 addField("aInt", Integer.TYPE).
@@ -48,6 +49,7 @@ public class TupleSchemaTest {
                 addField("aFloat", Float.TYPE).
                 addField("aLong", Long.TYPE).
                 addField("aDouble", Double.TYPE).
+                directMemory().
                 build();
 
         long record = schema.createRecord();

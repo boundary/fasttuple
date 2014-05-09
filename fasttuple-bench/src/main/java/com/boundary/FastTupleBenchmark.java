@@ -25,6 +25,7 @@
 
 package com.boundary;
 
+import com.boundary.tuple.DirectTupleSchema;
 import com.boundary.tuple.FastTuple;
 import com.boundary.tuple.TuplePool;
 import com.boundary.tuple.TupleSchema;
@@ -49,7 +50,7 @@ import java.util.concurrent.BlockingQueue;
 
 @State(Scope.Benchmark)
 public class FastTupleBenchmark {
-    private TupleSchema schema;
+    private DirectTupleSchema schema;
     private BlockingQueue<Derp> derps;
     private PoolSettings<Derp> poolSettings = new PoolSettings<Derp>(
             new PoolableObjectBase<Derp>() {
@@ -88,6 +89,7 @@ public class FastTupleBenchmark {
                 addField("b",Long.TYPE).
                 addField("c",Long.TYPE).
                 implementInterface(StaticBinding.class).
+                directMemory().
                 build();
         record2 = schema.createRecord();
         poolSettings.min(1).max(10);
