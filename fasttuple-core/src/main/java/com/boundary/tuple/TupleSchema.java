@@ -102,7 +102,7 @@ public abstract class TupleSchema {
             return new DirectTupleSchema.Builder(this);
         }
 
-//        public HeapTupleSchema.Builder heapMemory() { return new HeapTupleSchema.Builder(this); }
+        public HeapTupleSchema.Builder heapMemory() { return new HeapTupleSchema.Builder(this); }
 
     }
 

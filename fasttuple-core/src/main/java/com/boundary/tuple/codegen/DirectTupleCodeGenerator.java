@@ -12,9 +12,11 @@ import java.util.List;
  * Created by cliff on 5/5/14.
  */
 public class DirectTupleCodeGenerator extends TupleCodeGenerator {
+    protected int[] layout;
 
-    public DirectTupleCodeGenerator(Class iface, String[] fieldNames, Class[] fieldTypes, int[] indexes) {
-        super(iface, fieldNames, fieldTypes, indexes);
+    public DirectTupleCodeGenerator(Class iface, String[] fieldNames, Class[] fieldTypes, int[] layout) {
+        super(iface, fieldNames, fieldTypes);
+        this.layout = layout.clone();
     }
 
     protected Java.FieldDeclaration[] generateFields() {
@@ -50,7 +52,7 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
                             Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
                             false,
                             Lists.<Java.BlockStatement>newArrayList(new Java.ReturnStatement(loc,
-                                    generateGetInvocation(fieldTypes[i], indexes[i])))
+                                    generateGetInvocation(fieldTypes[i], i)))
                     )
             );
         }
@@ -86,7 +88,7 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
                             Lists.<Java.Rvalue>newArrayList(new Java.IntegerLiteral(loc, Integer.toString(i+1))),
                             false,
                             Lists.<Java.BlockStatement>newArrayList(
-                                    new Java.ExpressionStatement(generateSetInvocation(fieldTypes[i], indexes[i], value)),
+                                    new Java.ExpressionStatement(generateSetInvocation(fieldTypes[i], i, value)),
                                     new Java.BreakStatement(loc, null)
                             )
                     )
@@ -116,23 +118,7 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
         return list;
     }
 
-    protected Java.SwitchStatement.SwitchBlockStatementGroup generateDefaultCase() {
-        return new Java.SwitchStatement.SwitchBlockStatementGroup(
-                loc,
-                Lists.<Java.Rvalue>newArrayList(),
-                true,
-                Lists.<Java.BlockStatement>newArrayList(
-                    new Java.ThrowStatement(
-                            loc,
-                            new Java.NewClassInstance(
-                                    loc,
-                                    null,
-                                    new Java.ReferenceType(loc, new String[] {"IllegalArgumentException"}, null),
-                                    new Java.Rvalue[0]))
-        ));
-    }
-
-    protected Java.MethodInvocation generateGetInvocation(Class type, int index) throws CompileException {
+    protected Java.Rvalue generateGetInvocation(Class type, int index) throws CompileException {
         return new Java.MethodInvocation(loc,
                 new Java.AmbiguousName(loc, new String[] {"unsafe"}),
                 "get" + accessorForType(type),
@@ -140,12 +126,12 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
                         new Java.BinaryOperation(loc,
                                 new Java.AmbiguousName(loc, new String[] {"address"}),
                                 "+",
-                                new Java.IntegerLiteral(loc, Integer.toString(index)))
+                                new Java.IntegerLiteral(loc, Integer.toString(layout[index])))
                 }
         );
     }
 
-    protected Java.MethodInvocation generateSetInvocation(Class type, int index, String value) throws CompileException {
+    protected Java.Rvalue generateSetInvocation(Class type, int index, String value) throws CompileException {
         return new Java.MethodInvocation(loc,
                 new Java.AmbiguousName(loc, new String[] {"unsafe"}),
                 "put" + accessorForType(type),
@@ -153,7 +139,7 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
                         new Java.BinaryOperation(loc,
                                 new Java.AmbiguousName(loc, new String[]{"address"}),
                                 "+",
-                                new Java.IntegerLiteral(loc, Integer.toString(index))),
+                                new Java.IntegerLiteral(loc, Integer.toString(layout[index]))),
                         new Java.Cast(loc, classToRefType(type), new Java.AmbiguousName(loc, new String[] {value}))
                 }
         );
@@ -177,13 +163,4 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
         }
         return null;
     }
-
-    protected Java.Type classToRefType(Class type) {
-        if (type.isPrimitive()) {
-            return new Java.ReferenceType(loc, primToBox(type).split("\\."), null);
-        } else {
-            return new Java.ReferenceType(loc, type.getCanonicalName().split("\\."), null);
-        }
-    }
-
 }

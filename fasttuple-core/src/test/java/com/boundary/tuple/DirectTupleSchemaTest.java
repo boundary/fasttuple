@@ -1,6 +1,11 @@
 package com.boundary.tuple;
 
+import org.codehaus.janino.Java;
+import org.codehaus.janino.Parser;
+import org.codehaus.janino.Scanner;
 import org.junit.Test;
+
+import java.io.FileInputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +17,7 @@ public class DirectTupleSchemaTest {
     public DirectTupleSchemaTest() {}
 
     @Test
-    public void layoutTest() {
+    public void layoutTest() throws Exception {
         DirectTupleSchema schema = TupleSchema.builder().
                 addField("aByte", Byte.TYPE).
                 addField("aChar", Character.TYPE).
@@ -35,8 +40,13 @@ public class DirectTupleSchemaTest {
         assertEquals(26, layout[3]);
         assertEquals(28, layout[0]);
 
+        Parser parser = new Parser(new Scanner(null, new FileInputStream("/Users/cliff/projects/fasttuple/fasttuple-core/src/main/java/com/boundary/tuple/TupleSchema.java")));
+        Java.CompilationUnit cu = parser.parseCompilationUnit();
+
         //default pad to long word
         assertEquals(32, schema.getByteSize());
+
+
     }
 
     @Test

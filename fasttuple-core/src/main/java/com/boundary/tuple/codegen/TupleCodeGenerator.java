@@ -30,16 +30,14 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
     protected Class iface;
     protected String[] fieldNames;
     protected Class[] fieldTypes;
-    protected int[] indexes;
     protected Location loc;
     protected String className;
 
-    public TupleCodeGenerator(Class iface, String[] fieldNames, Class[] fieldTypes, int[] indexes) {
+    public TupleCodeGenerator(Class iface, String[] fieldNames, Class[] fieldTypes) {
         this.loc = new Location("", (short)0, (short)0);
         this.iface = iface;
         this.fieldNames = fieldNames.clone();
         this.fieldTypes = fieldTypes.clone();
-        this.indexes = indexes.clone();
         this.className = "FastTuple" + counter.getAndIncrement();
         this.setClassName("com.boundary.tuple." + className);
         this.setParentClassLoader(this.getClass().getClassLoader());
@@ -91,10 +89,10 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         for (int i = 0; i < fieldNames.length; i++) {
             String name = fieldNames[i];
             Class type = fieldTypes[i];
-            int index = indexes[i];
 
-            cd.addDeclaredMethod(generateGetter(name, type, index));
-            cd.addDeclaredMethod(generateSetter(name, type, index));
+
+            cd.addDeclaredMethod(generateGetter(name, type, i));
+            cd.addDeclaredMethod(generateSetter(name, type, i));
         }
         cd.addDeclaredMethod(generateIndexedGetter());
         cd.addDeclaredMethod(generateIndexedSetter());
@@ -219,8 +217,8 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         );
     }
 
-    protected abstract Java.MethodInvocation generateGetInvocation(Class type, int index) throws CompileException;
-    protected abstract Java.MethodInvocation generateSetInvocation(Class type, int index, String value) throws CompileException;
+    protected abstract Java.Rvalue generateGetInvocation(Class type, int index) throws CompileException;
+    protected abstract Java.Rvalue generateSetInvocation(Class type, int index, String value) throws CompileException;
 
     protected String capitalize(String st) {
         return String.valueOf(toUpperCase(st.charAt(0))) + st.substring(1);
@@ -247,5 +245,29 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         if (type.equals(Float.TYPE)) return "Float";
         if (type.equals(Double.TYPE)) return "Double";
         return null;
+    }
+
+    protected Java.SwitchStatement.SwitchBlockStatementGroup generateDefaultCase() {
+        return new Java.SwitchStatement.SwitchBlockStatementGroup(
+                loc,
+                Lists.<Java.Rvalue>newArrayList(),
+                true,
+                Lists.<Java.BlockStatement>newArrayList(
+                        new Java.ThrowStatement(
+                                loc,
+                                new Java.NewClassInstance(
+                                        loc,
+                                        null,
+                                        new Java.ReferenceType(loc, new String[] {"IllegalArgumentException"}, null),
+                                        new Java.Rvalue[0]))
+                ));
+    }
+
+    protected Java.Type classToRefType(Class type) {
+        if (type.isPrimitive()) {
+            return new Java.ReferenceType(loc, primToBox(type).split("\\."), null);
+        } else {
+            return new Java.ReferenceType(loc, type.getCanonicalName().split("\\."), null);
+        }
     }
 }

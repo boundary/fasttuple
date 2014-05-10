@@ -1,18 +1,19 @@
-package com.boundary.tuple;
+package com.boundary.tuple.codegen;
 
-import com.boundary.tuple.codegen.DirectTupleCodeGenerator;
+import com.boundary.tuple.FastTuple;
+import com.boundary.tuple.HeapTupleSchema;
+import com.boundary.tuple.TupleSchema;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * Created by cliff on 5/5/14.
+ * Created by cliff on 5/9/14.
  */
-public class DirectTupleCodeGeneratorTest {
-
+public class HeapTupleCodeGeneratorTest {
     @Test
     public void testAccessorsGetGenerated() throws Exception {
-        DirectTupleSchema schema = TupleSchema.builder().
+        HeapTupleSchema schema = TupleSchema.builder().
                 addField("a", Long.TYPE).
                 addField("b", Integer.TYPE).
                 addField("c", Short.TYPE).
@@ -20,10 +21,10 @@ public class DirectTupleCodeGeneratorTest {
                 addField("e", Byte.TYPE).
                 addField("f", Float.TYPE).
                 addField("g", Double.TYPE).
-                directMemory().
+                heapMemory().
                 build();
 
-        DirectTupleCodeGenerator codegen = new DirectTupleCodeGenerator(null, schema.getFieldNames(), schema.getFieldTypes(), schema.getLayout());
+        HeapTupleCodeGenerator codegen = new HeapTupleCodeGenerator(null, schema.getFieldNames(), schema.getFieldTypes());
         Class clazz = codegen.cookToClass();
         assertGetterAndSetterGenerated(clazz, "a", long.class);
         assertGetterAndSetterGenerated(clazz, "b", int.class);
@@ -44,7 +45,7 @@ public class DirectTupleCodeGeneratorTest {
                 addField("e", Byte.TYPE).
                 addField("f", Float.TYPE).
                 addField("g", Double.TYPE).
-                directMemory().
+                heapMemory().
                 build();
         schema.generateClass();
         FastTuple tuple = schema.createTuple();
@@ -67,7 +68,7 @@ public class DirectTupleCodeGeneratorTest {
                 addField("e", Byte.TYPE).
                 addField("f", Float.TYPE).
                 addField("g", Double.TYPE).
-                directMemory().
+                heapMemory().
                 build();
         schema.generateClass();
         FastTuple tuple = schema.createTuple();
@@ -90,7 +91,7 @@ public class DirectTupleCodeGeneratorTest {
                 addField("e", Byte.TYPE).
                 addField("f", Float.TYPE).
                 addField("g", Double.TYPE).
-                directMemory().
+                heapMemory().
                 build();
         schema.generateClass();
         FastTuple tuple = schema.createTuple();
@@ -108,7 +109,7 @@ public class DirectTupleCodeGeneratorTest {
         TupleSchema schema = TupleSchema.builder().
                 addField("a", Long.TYPE).
                 implementInterface(StaticBinding.class).
-                directMemory().
+                heapMemory().
                 build();
         schema.generateClass();
         FastTuple tuple = schema.createTuple();
@@ -160,5 +161,3 @@ public class DirectTupleCodeGeneratorTest {
         public long a();
     }
 }
-
-
