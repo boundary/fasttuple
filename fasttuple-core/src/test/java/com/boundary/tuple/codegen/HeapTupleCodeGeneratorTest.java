@@ -47,7 +47,6 @@ public class HeapTupleCodeGeneratorTest {
                 addField("g", Double.TYPE).
                 heapMemory().
                 build();
-        schema.generateClass();
         FastTuple tuple = schema.createTuple();
         assertGetterAndSetterRoundTrip(tuple, schema.tupleClass(), "a", Long.TYPE, 100L);
         assertGetterAndSetterRoundTrip(tuple, schema.tupleClass(), "b", Integer.TYPE, 40);
@@ -70,7 +69,6 @@ public class HeapTupleCodeGeneratorTest {
                 addField("g", Double.TYPE).
                 heapMemory().
                 build();
-        schema.generateClass();
         FastTuple tuple = schema.createTuple();
         assertIndexedGetterAndSetterRoundTrip(tuple, 1, 100L);
         assertIndexedGetterAndSetterRoundTrip(tuple, 2, 40);
@@ -93,7 +91,6 @@ public class HeapTupleCodeGeneratorTest {
                 addField("g", Double.TYPE).
                 heapMemory().
                 build();
-        schema.generateClass();
         FastTuple tuple = schema.createTuple();
         assertIndexedTypedGetterAndSetterRoundTrip(tuple, 1, 100L);
         assertIndexedTypedGetterAndSetterRoundTrip(tuple, 2, 40);
@@ -111,7 +108,6 @@ public class HeapTupleCodeGeneratorTest {
                 implementInterface(StaticBinding.class).
                 heapMemory().
                 build();
-        schema.generateClass();
         FastTuple tuple = schema.createTuple();
         assertTrue(tuple instanceof StaticBinding);
     }

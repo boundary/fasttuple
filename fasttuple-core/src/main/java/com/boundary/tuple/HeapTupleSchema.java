@@ -18,17 +18,18 @@ public class HeapTupleSchema extends TupleSchema {
             this.iface = builder.iface;
         }
 
-        public HeapTupleSchema build() {
+        public HeapTupleSchema build() throws Exception {
             return new HeapTupleSchema(fn.toArray(new String[fn.size()]), ft.toArray(new Class[ft.size()]), iface);
         }
     }
 
-    public HeapTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface) {
+    public HeapTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface) throws Exception {
         super(fieldNames, fieldTypes, iface);
+        generateClass();
     }
 
     @Override
-    public void generateClass() throws Exception {
+    protected void generateClass() throws Exception {
         this.clazz = new HeapTupleCodeGenerator(iface, fieldNames, fieldTypes).cookToClass();
         this.cons = clazz.getConstructor();
     }

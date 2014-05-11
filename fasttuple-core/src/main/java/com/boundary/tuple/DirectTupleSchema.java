@@ -36,18 +36,19 @@ public class DirectTupleSchema extends TupleSchema {
             return this;
         }
 
-        public DirectTupleSchema build() {
+        public DirectTupleSchema build() throws Exception {
             return new DirectTupleSchema(fn.toArray(new String[fn.size()]), ft.toArray(new Class[ft.size()]), iface, padding);
         }
     }
 
-    public DirectTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface, boolean padding) {
+    public DirectTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface, boolean padding) throws Exception {
         super(fieldNames, fieldTypes, iface);
         int size = fieldNames.length;
         this.layout = new int[size];
         this.widths = new int[size];
         this.padToCacheLine = padding;
         generateLayout();
+        generateClass();
     }
 
     public long getLong(long address, int index) {
@@ -145,7 +146,7 @@ public class DirectTupleSchema extends TupleSchema {
         unsafe.freeMemory(address);
     }
 
-    public void generateClass() throws Exception {
+    protected void generateClass() throws Exception {
         if (this.clazz == null) {
             this.clazz = new DirectTupleCodeGenerator(iface, fieldNames, fieldTypes, layout).cookToClass();
             this.addressOffset = unsafe.objectFieldOffset(clazz.getField("address"));

@@ -149,7 +149,7 @@ public abstract class TupleSchema {
         return fieldTypes.clone();
     }
 
-    public abstract void generateClass() throws Exception;
+    protected abstract void generateClass() throws Exception;
 
     public abstract FastTuple createTuple() throws Exception;
 }

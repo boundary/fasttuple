@@ -82,31 +82,32 @@ public class FastTupleBenchmark {
     ConstantCallSite mhgc;
 
     public FastTupleBenchmark() {
-        derps = new ArrayBlockingQueue<Derp>(100);
-        derps.offer(new Derp(0,0,0));
-        schema = TupleSchema.builder().
-                addField("a",Long.TYPE).
-                addField("b",Long.TYPE).
-                addField("c",Long.TYPE).
-                implementInterface(StaticBinding.class).
-                directMemory().
-                build();
-        record2 = schema.createRecord();
-        poolSettings.min(1).max(10);
-        pool = poolSettings.pool();
-        pool2 = new FastObjectPool<Derp>(new FastObjectPool.PoolFactory<Derp>() {
-            @Override
-            public Derp create() {
-                return new Derp(0,0,0);
-            }
-        }, 10);
-        pool3 = new TuplePool<Derp>(10, new Function<Void, Derp>() {
-            @Override
-            public Derp apply(Void aVoid) {
-                return new Derp(0,0,0);
-            }
-        });
         try {
+            derps = new ArrayBlockingQueue<Derp>(100);
+            derps.offer(new Derp(0,0,0));
+            schema = TupleSchema.builder().
+                    addField("a",Long.TYPE).
+                    addField("b",Long.TYPE).
+                    addField("c",Long.TYPE).
+                    implementInterface(StaticBinding.class).
+                    directMemory().
+                    build();
+            record2 = schema.createRecord();
+            poolSettings.min(1).max(10);
+            pool = poolSettings.pool();
+            pool2 = new FastObjectPool<Derp>(new FastObjectPool.PoolFactory<Derp>() {
+                @Override
+                public Derp create() {
+                    return new Derp(0,0,0);
+                }
+            }, 10);
+            pool3 = new TuplePool<Derp>(10, new Function<Void, Derp>() {
+                @Override
+                public Derp apply(Void aVoid) {
+                    return new Derp(0,0,0);
+                }
+            });
+
             fieldA = Derp.class.getDeclaredField("a");
             fieldB = Derp.class.getDeclaredField("b");
             fieldC = Derp.class.getDeclaredField("c");
