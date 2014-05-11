@@ -26,9 +26,7 @@ public class DirectTupleSchema extends TupleSchema {
         protected boolean padding = false;
 
         public Builder(TupleSchema.Builder builder) {
-            this.fn = builder.fn;
-            this.ft = builder.ft;
-            this.iface = builder.iface;
+            super(builder);
         }
 
         public Builder padToMachineWord(boolean padding) {
@@ -37,18 +35,19 @@ public class DirectTupleSchema extends TupleSchema {
         }
 
         public DirectTupleSchema build() throws Exception {
-            return new DirectTupleSchema(fn.toArray(new String[fn.size()]), ft.toArray(new Class[ft.size()]), iface, padding);
+            return new DirectTupleSchema(this);
         }
     }
 
-    public DirectTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface, boolean padding) throws Exception {
-        super(fieldNames, fieldTypes, iface);
+    public DirectTupleSchema(Builder builder) throws Exception {
+        super(builder);
         int size = fieldNames.length;
         this.layout = new int[size];
         this.widths = new int[size];
-        this.padToCacheLine = padding;
+        this.padToCacheLine = builder.padding;
         generateLayout();
         generateClass();
+        generatePool();
     }
 
     public long getLong(long address, int index) {
@@ -140,6 +139,16 @@ public class DirectTupleSchema extends TupleSchema {
     public FastTuple createTuple() throws Exception {
         long address = createRecord();
         return createTuple(address);
+    }
+
+    @Override
+    public FastTuple[] createTupleArray(int size) throws Exception {
+        long address = createRecordArray(size);
+        FastTuple[] tuples = new FastTuple[size];
+        for (int i=0; i<size; i++) {
+            tuples[i] = createTuple(address + byteSize * i);
+        }
+        return tuples;
     }
 
     public void destroy(long address) {

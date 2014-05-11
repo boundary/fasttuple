@@ -13,19 +13,18 @@ public class HeapTupleSchema extends TupleSchema {
     public static class Builder extends TupleSchema.Builder {
 
         public Builder(TupleSchema.Builder builder) {
-            this.fn = builder.fn;
-            this.ft = builder.ft;
-            this.iface = builder.iface;
+            super(builder);
         }
 
         public HeapTupleSchema build() throws Exception {
-            return new HeapTupleSchema(fn.toArray(new String[fn.size()]), ft.toArray(new Class[ft.size()]), iface);
+            return new HeapTupleSchema(this);
         }
     }
 
-    public HeapTupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface) throws Exception {
-        super(fieldNames, fieldTypes, iface);
+    public HeapTupleSchema(Builder builder) throws Exception {
+        super(builder);
         generateClass();
+        generatePool();
     }
 
     @Override
@@ -37,5 +36,14 @@ public class HeapTupleSchema extends TupleSchema {
     @Override
     public FastTuple createTuple() throws Exception {
         return (FastTuple)cons.newInstance();
+    }
+
+    @Override
+    public FastTuple[] createTupleArray(int size) throws Exception {
+        FastTuple[] tuples = new FastTuple[size];
+        for (int i=0; i<size; i++) {
+            tuples[i] = createTuple();
+        }
+        return tuples;
     }
 }

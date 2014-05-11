@@ -1,8 +1,10 @@
 package com.boundary.tuple;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,39 +16,53 @@ public abstract class TupleSchema {
     protected Class[] fieldTypes;
     protected Class iface;
     protected Class clazz;
+    protected int poolSize;
+    protected boolean createWhenExhausted;
+    protected TuplePool<FastTuple> pool;
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public TupleSchema(String[] fieldNames, Class[] fieldTypes, Class iface) {
+    protected TupleSchema(Builder builder) {
+        this.fieldNames = builder.fn.toArray(new String[builder.fn.size()]);
+        this.fieldTypes = builder.ft.toArray(new Class[builder.ft.size()]);
         Preconditions.checkArgument(fieldNames.length == fieldTypes.length,
                 "fieldNames and fieldTypes must have equal length");
         for (int i = 0; i < fieldNames.length; i++) {
             Preconditions.checkArgument(fieldTypes[i].isPrimitive() && !fieldTypes[i].equals(Boolean.TYPE));
         }
+        this.iface = builder.iface;
         if (iface != null) {
             Preconditions.checkArgument(iface.isInterface(),
                     iface.getName() +  " is not an interface");
         }
-        int size = fieldNames.length;
-        this.fieldNames = new String[size];
-        this.fieldTypes = new Class[size];
-
-        this.iface = iface;
-        System.arraycopy(fieldNames, 0, this.fieldNames, 0, fieldNames.length);
-        System.arraycopy(fieldTypes, 0, this.fieldTypes, 0, fieldTypes.length);
+        this.poolSize = builder.poolSize;
     }
 
     public static class Builder {
         protected List<String> fn;
         protected List<Class> ft;
         protected Class iface;
+        protected int poolSize;
+        protected int threads;
+        protected boolean createWhenExhausted = false;
+
+        public Builder(Builder builder) {
+            fn = new ArrayList<>(builder.fn);
+            ft = new ArrayList<>(builder.ft);
+            iface = builder.iface;
+            poolSize = builder.poolSize;
+            threads = builder.threads;
+            createWhenExhausted = builder.createWhenExhausted;
+        }
 
         public Builder() {
             fn = Lists.newArrayList();
             ft = Lists.newArrayList();
             iface = null;
+            poolSize = 0;
+            threads = 0;
         }
 
         public Builder addField(String fieldName, Class fieldType) {
@@ -95,6 +111,16 @@ public abstract class TupleSchema {
 
         public Builder addField(Class c) {
             ft.add(c);
+            return this;
+        }
+
+        public Builder poolOfSize(int poolSize) {
+            this.poolSize = poolSize;
+            return this;
+        }
+
+        public Builder expandingPool() {
+            this.createWhenExhausted = true;
             return this;
         }
 
@@ -152,4 +178,23 @@ public abstract class TupleSchema {
     protected abstract void generateClass() throws Exception;
 
     public abstract FastTuple createTuple() throws Exception;
+
+    public abstract FastTuple[] createTupleArray(int size) throws Exception;
+
+    public TuplePool<FastTuple> pool() {
+        return pool;
+    }
+
+    protected void generatePool() throws Exception {
+        this.pool = new TuplePool<>(poolSize, createWhenExhausted, new Function<Integer, FastTuple[]>() {
+            @Override
+            public FastTuple[] apply(Integer integer) {
+                try {
+                    return createTupleArray(integer);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+    }
 }

@@ -86,9 +86,9 @@ public class FastTupleBenchmark {
             derps = new ArrayBlockingQueue<Derp>(100);
             derps.offer(new Derp(0,0,0));
             schema = TupleSchema.builder().
-                    addField("a",Long.TYPE).
-                    addField("b",Long.TYPE).
-                    addField("c",Long.TYPE).
+                    addField("a", Long.TYPE).
+                    addField("b", Long.TYPE).
+                    addField("c", Long.TYPE).
                     implementInterface(StaticBinding.class).
                     directMemory().
                     build();
@@ -101,10 +101,10 @@ public class FastTupleBenchmark {
                     return new Derp(0,0,0);
                 }
             }, 10);
-            pool3 = new TuplePool<Derp>(10, new Function<Void, Derp>() {
+            pool3 = new TuplePool<Derp>(10, false, new Function<Integer, Derp[]>() {
                 @Override
-                public Derp apply(Void aVoid) {
-                    return new Derp(0,0,0);
+                public Derp[] apply(Integer size) {
+                    return new Derp[size];
                 }
             });
 
