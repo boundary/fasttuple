@@ -23,11 +23,4 @@ public class Coterie {
     public static Unsafe unsafe() {
         return theUnsafe;
     }
-
-    public static int bitness() {
-        String bitness = System.getProperty("sun.arch.data.model");
-        if (bitness == null) return 32;
-        if (bitness.equals("unknown")) return 32;
-        return Integer.parseInt(bitness);
-    }
 }

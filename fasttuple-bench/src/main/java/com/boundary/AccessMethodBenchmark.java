@@ -49,14 +49,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 @State(Scope.Benchmark)
-public class FastTupleBenchmark {
+public class AccessMethodBenchmark {
     private DirectTupleSchema schema;
     private BlockingQueue<Derp> derps;
     private PoolSettings<Derp> poolSettings = new PoolSettings<Derp>(
             new PoolableObjectBase<Derp>() {
                 @Override
                 public Derp make() throws PoolException {
-                    return new Derp(0,0,0);
+                    return new Derp(0,0,(short)0);
                 }
 
                 @Override
@@ -81,14 +81,14 @@ public class FastTupleBenchmark {
     ConstantCallSite mhgb;
     ConstantCallSite mhgc;
 
-    public FastTupleBenchmark() {
+    public AccessMethodBenchmark() {
         try {
             derps = new ArrayBlockingQueue<Derp>(100);
-            derps.offer(new Derp(0,0,0));
+            derps.offer(new Derp(0,0,(short)0));
             schema = TupleSchema.builder().
                     addField("a", Long.TYPE).
-                    addField("b", Long.TYPE).
-                    addField("c", Long.TYPE).
+                    addField("b", Integer.TYPE).
+                    addField("c", Short.TYPE).
                     implementInterface(StaticBinding.class).
                     directMemory().
                     build();
@@ -98,7 +98,7 @@ public class FastTupleBenchmark {
             pool2 = new FastObjectPool<Derp>(new FastObjectPool.PoolFactory<Derp>() {
                 @Override
                 public Derp create() {
-                    return new Derp(0,0,0);
+                    return new Derp(0,0,(short)0);
                 }
             }, 10);
             pool3 = new TuplePool<Derp>(10, false, new Function<Integer, Derp[]>() {
@@ -113,11 +113,11 @@ public class FastTupleBenchmark {
             fieldC = Derp.class.getDeclaredField("c");
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             mhsa = new ConstantCallSite(lookup.findSetter(Derp.class, "a", Long.TYPE));
-            mhsb = new ConstantCallSite(lookup.findSetter(Derp.class, "b", Long.TYPE));
-            mhsc = new ConstantCallSite(lookup.findSetter(Derp.class, "c", Long.TYPE));
+            mhsb = new ConstantCallSite(lookup.findSetter(Derp.class, "b", Integer.TYPE));
+            mhsc = new ConstantCallSite(lookup.findSetter(Derp.class, "c", Short.TYPE));
             mhga = new ConstantCallSite(lookup.findGetter(Derp.class, "a", Long.TYPE));
-            mhgb = new ConstantCallSite(lookup.findGetter(Derp.class, "b", Long.TYPE));
-            mhgc = new ConstantCallSite(lookup.findGetter(Derp.class, "c", Long.TYPE));
+            mhgb = new ConstantCallSite(lookup.findGetter(Derp.class, "b", Integer.TYPE));
+            mhgc = new ConstantCallSite(lookup.findGetter(Derp.class, "c", Short.TYPE));
         } catch (Exception ex) {
 
         }
@@ -127,9 +127,9 @@ public class FastTupleBenchmark {
     public void testAllocateSetAndDeallocate() {
         long record = schema.createRecord();
         schema.setLong(record, 0, 100);
-        schema.setLong(record, 1, 200);
-        schema.setLong(record, 2, 300);
-        if (schema.getLong(record, 0) + schema.getLong(record, 1) + schema.getLong(record, 2) == System.nanoTime())
+        schema.setInt(record, 1, 200);
+        schema.setShort(record, 2, (short)300);
+        if (schema.getLong(record, 0) + schema.getInt(record, 1) + schema.getShort(record, 2) == System.nanoTime())
             throw new IllegalStateException();
         schema.destroy(record);
     }
@@ -137,9 +137,9 @@ public class FastTupleBenchmark {
     @GenerateMicroBenchmark
     public void testOffheapSchemaSet() {
         schema.setLong(record2, 0, 100);
-        schema.setLong(record2, 1, 200);
-        schema.setLong(record2, 2, 300);
-        if (schema.getLong(record2, 0) + schema.getLong(record2, 1) + schema.getLong(record2, 2) == System.nanoTime())
+        schema.setInt(record2, 1, 200);
+        schema.setShort(record2, 2, (short)300);
+        if (schema.getLong(record2, 0) + schema.getInt(record2, 1) + schema.getShort(record2, 2) == System.nanoTime())
             throw new IllegalStateException();
     }
 
@@ -147,19 +147,19 @@ public class FastTupleBenchmark {
     public void testOffheapDirectSet() {
         Unsafe un = Coterie.unsafe();
         un.putLong(record2 + 0L, 100);
-        un.putLong(record2 + 8L, 200);
-        un.putLong(record2 + 16L, 300);
-        if (un.getLong(record2 + 0L) + un.getLong(record2 + 8L) + un.getLong(record2 + 16L) == System.nanoTime())
+        un.putInt(record2 + 8L, 200);
+        un.putShort(record2 + 16L, (short)300);
+        if (un.getLong(record2 + 0L) + un.getInt(record2 + 8L) + un.getShort(record2 + 16L) == System.nanoTime())
             throw new IllegalStateException();
     }
 
     @GenerateMicroBenchmark
     public void testInvokeDynamic() throws Throwable {
-        Derp derp = new Derp(0,0,0);
+        Derp derp = new Derp(0,0,(short)0);
         mhsa.dynamicInvoker().invoke(derp, 100L);
-        mhsb.dynamicInvoker().invoke(derp, 200L);
-        mhsc.dynamicInvoker().invoke(derp, 300L);
-        if ((Long)mhga.dynamicInvoker().invoke(derp) + (Long)mhgb.dynamicInvoker().invoke(derp) + (Long)mhgc.dynamicInvoker().invoke(derp) == System.nanoTime())
+        mhsb.dynamicInvoker().invoke(derp, 200);
+        mhsc.dynamicInvoker().invoke(derp, (short)300L);
+        if ((Long)mhga.dynamicInvoker().invoke(derp) + (Integer)mhgb.dynamicInvoker().invoke(derp) + (Short)mhgc.dynamicInvoker().invoke(derp) == System.nanoTime())
             throw new IllegalStateException();
     }
 
@@ -176,14 +176,14 @@ public class FastTupleBenchmark {
     public void testLongArray() {
         long[] longs = new long[3];
         longs[0] = 100L;
-        longs[1] = 200L;
-        longs[2] = 300L;
+        longs[1] = 200;
+        longs[2] = (short)300;
         if (longs[0] + longs[1] + longs[2] == System.nanoTime()) throw new IllegalStateException();
     }
 
     @GenerateMicroBenchmark
     public void testClass() {
-        Derp derp = new Derp(0, 0, 0);
+        Derp derp = new Derp(0, 0, (short)0);
         derp.a = 100;
         derp.b = 200;
         derp.c = 300;
@@ -192,11 +192,11 @@ public class FastTupleBenchmark {
 
     @GenerateMicroBenchmark
     public void testReflectField() throws Exception {
-        Derp derp = new Derp(0, 0, 0);
+        Derp derp = new Derp(0, 0, (short)0);
         fieldA.setLong(derp, 100);
-        fieldB.setLong(derp, 200);
-        fieldC.setLong(derp, 300);
-        if (fieldA.getLong(derp) + fieldB.getLong(derp) + fieldC.getLong(derp) == System.nanoTime()) throw new IllegalStateException();
+        fieldB.setInt(derp, 200);
+        fieldC.setShort(derp, (short)300);
+        if (fieldA.getLong(derp) + fieldB.getInt(derp) + fieldC.getShort(derp) == System.nanoTime()) throw new IllegalStateException();
     }
 
     @GenerateMicroBenchmark
@@ -244,9 +244,9 @@ public class FastTupleBenchmark {
     public void testFastTuplePreAllocIndexedBoxing() throws Exception {
         FastTuple tuple = schema.createTuple(record2);
         tuple.indexedSet(1, 100L);
-        tuple.indexedSet(2, 200L);
-        tuple.indexedSet(3, 300L);
-        if ((Long)tuple.indexedGet(1) + (Long)tuple.indexedGet(2) + (Long)tuple.indexedGet(3) == System.nanoTime()) throw new IllegalStateException();
+        tuple.indexedSet(2, 200);
+        tuple.indexedSet(3, (short)300);
+        if ((Long)tuple.indexedGet(1) + (Integer)tuple.indexedGet(2) + (Short)tuple.indexedGet(3) == System.nanoTime()) throw new IllegalStateException();
     }
 
     @GenerateMicroBenchmark
@@ -262,17 +262,17 @@ public class FastTupleBenchmark {
     public void testFastTupleStaticBinding() throws Exception {
         StaticBinding tuple = (StaticBinding)schema.createTuple(record2);
         tuple.a(100L);
-        tuple.b(200L);
-        tuple.c(300L);
+        tuple.b(200);
+        tuple.c((short)300);
         if (tuple.a() + tuple.b() + tuple.c() == System.nanoTime()) throw new IllegalStateException();
     }
 
     static class Derp {
         public long a;
-        public long b;
-        public long c;
+        public int b;
+        public short c;
 
-        public Derp(long a, long b, long c) {
+        public Derp(long a, int b, short c) {
             this.a = a;
             this.b = b;
             this.c = c;
@@ -281,11 +281,11 @@ public class FastTupleBenchmark {
 
     public static interface StaticBinding {
         public void a(long a);
-        public void b(long b);
-        public void c(long c);
+        public void b(int b);
+        public void c(short c);
         public long a();
-        public long b();
-        public long c();
+        public int b();
+        public short c();
     }
 
 }

@@ -65,12 +65,28 @@ public abstract class TupleSchema {
             threads = 0;
         }
 
+        /**
+         * Adds a field name and type to the schema.  Field names end up as both method names and field names
+         * in the generated class, therefore they have the same restrictions on allowable characters.  Passing
+         * in an illegal name will cause a CompileException during the call to build.
+         *
+         * @param fieldName
+         * @param fieldType
+         * @return
+         */
         public Builder addField(String fieldName, Class fieldType) {
             fn.add(fieldName);
             ft.add(fieldType);
             return this;
         }
 
+        /**
+         * The generated FastTuple subclass will implement the passed in interface.  FastTuple's produced
+         * from this schema can then be cast to the interface type, for type safe invocation of the desired methods.
+         *
+         * @param iface
+         * @return
+         */
         public Builder implementInterface(Class iface) {
             this.iface = iface;
             return this;
@@ -90,11 +106,6 @@ public abstract class TupleSchema {
             return this;
         }
 
-        public Builder addField(String fieldName) {
-            fn.add(fieldName);
-            return this;
-        }
-
         public Builder addFieldTypes(Class... fieldTypes) {
             for (Class c : fieldTypes) {
                 ft.add(c);
@@ -109,26 +120,47 @@ public abstract class TupleSchema {
             return this;
         }
 
-        public Builder addField(Class c) {
-            ft.add(c);
-            return this;
-        }
-
+        /**
+         * Sets the initial size for each thread local tuple pool.  The total number
+         * of tuples that will be allocated can be found by multiplying this number
+         * by the number of threads that will be checking tuples out of the pool.
+         *
+         * @param poolSize The size to generate specified in number of tuples.
+         * @return
+         */
         public Builder poolOfSize(int poolSize) {
             this.poolSize = poolSize;
             return this;
         }
 
+        /**
+         * Specifies that the tuple pool should allocate more tuples when it becomes
+         * exhausted.  Otherwise, an exhausted pool will throw an IllegalStateException.
+         *
+         * @return
+         */
         public Builder expandingPool() {
             this.createWhenExhausted = true;
             return this;
         }
 
+        /**
+         * Causes this schema to allocate its memory off of the main java heap.
+         *
+         * @return
+         */
         public DirectTupleSchema.Builder directMemory() {
             return new DirectTupleSchema.Builder(this);
         }
 
-        public HeapTupleSchema.Builder heapMemory() { return new HeapTupleSchema.Builder(this); }
+        /**
+         * Causes this schema to allocate its memory on heap, and fully reachable by GC.
+         *
+         * @return
+         */
+        public HeapTupleSchema.Builder heapMemory() {
+            return new HeapTupleSchema.Builder(this);
+        }
 
     }
 
@@ -177,10 +209,30 @@ public abstract class TupleSchema {
 
     protected abstract void generateClass() throws Exception;
 
+    /**
+     * Allocates a new tuple, completely separate from any pooling.
+     *
+     * @return
+     * @throws Exception
+     */
     public abstract FastTuple createTuple() throws Exception;
 
+    /**
+     * Allocates an array of tuples. This method will try to ensure that tuples get allocated
+     * in adjacent memory, however with the heap based allocation this is not guaranteed.
+     *
+     * @param size the number of tuples in the array.
+     * @return
+     * @throws Exception
+     */
     public abstract FastTuple[] createTupleArray(int size) throws Exception;
 
+    /**
+     * Returns the tuple pool for this schema.  Each individual thread accessing this method
+     * will see a different pool.
+     *
+     * @return
+     */
     public TuplePool<FastTuple> pool() {
         return pool;
     }

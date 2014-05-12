@@ -18,19 +18,27 @@ public class DirectTupleSchema extends TupleSchema {
     protected int[] widths;
     protected int byteSize;
     protected long addressOffset;
-    protected boolean padToCacheLine;
+    protected int wordSize;
 
     private static Unsafe unsafe = Coterie.unsafe();
 
     public static class Builder extends TupleSchema.Builder {
-        protected boolean padding = false;
+        protected int wordSize = 8;
 
         public Builder(TupleSchema.Builder builder) {
             super(builder);
         }
 
-        public Builder padToMachineWord(boolean padding) {
-            this.padding = true;
+        /**
+         * Pads out the size of each individual record such that it fits within a multiple of the wordSize.
+         * This is useful for eliminating false sharing when adjacent records are being utilized by different
+         * threads.
+         *
+         * @param wordSize
+         * @return
+         */
+        public Builder padToWordSize(int wordSize) {
+            this.wordSize = wordSize;
             return this;
         }
 
@@ -44,7 +52,7 @@ public class DirectTupleSchema extends TupleSchema {
         int size = fieldNames.length;
         this.layout = new int[size];
         this.widths = new int[size];
-        this.padToCacheLine = builder.padding;
+        this.wordSize = builder.wordSize;
         generateLayout();
         generateClass();
         generatePool();
@@ -132,8 +140,7 @@ public class DirectTupleSchema extends TupleSchema {
     public long createRecordArray(long size) {
         long address = unsafe.allocateMemory(size * byteSize);
         unsafe.setMemory(address, byteSize * size, (byte)0);
-//        return address;
-        throw new IllegalArgumentException();
+        return address;
     }
 
     public FastTuple createTuple() throws Exception {
@@ -180,13 +187,7 @@ public class DirectTupleSchema extends TupleSchema {
             widths[m.index] = m.size;
             offset += m.size;
         }
-        int padding;
-        if (padToCacheLine) {
-            padding = 64 - (offset % 64);
-        } else {
-            padding = 8 - (offset % 8);
-        }
-
+        int padding = wordSize - (offset % wordSize);
         byteSize = offset + padding;
     }
 

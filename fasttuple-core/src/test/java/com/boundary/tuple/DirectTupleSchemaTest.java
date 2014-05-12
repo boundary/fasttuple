@@ -2,7 +2,7 @@ package com.boundary.tuple;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by cliff on 5/4/14.
@@ -37,8 +37,25 @@ public class DirectTupleSchemaTest {
 
         //default pad to long word
         assertEquals(32, schema.getByteSize());
+    }
 
+    @Test
+    public void paddingTest() throws Exception {
+        DirectTupleSchema schema = TupleSchema.builder().
+                addField("aByte", Byte.TYPE).
+                addField("aChar", Character.TYPE).
+                addField("aInt", Integer.TYPE).
+                addField("aShort", Short.TYPE).
+                addField("aFloat", Float.TYPE).
+                addField("aLong", Long.TYPE).
+                addField("aDouble", Double.TYPE).
+                directMemory().
+                padToWordSize(64).
+                build();
 
+        //layout should be aLong, aDouble, aInt, aFloat, aChar, aShort, aByte
+        //default pad to long word
+        assertEquals(64, schema.getByteSize());
     }
 
     @Test
@@ -70,5 +87,42 @@ public class DirectTupleSchemaTest {
         assertEquals(0.1, schema.getFloat(record, 4), 0.00001);
         assertEquals(100000l, schema.getLong(record, 5));
         assertEquals(0.59403, schema.getDouble(record, 6), 0.00001);
+    }
+
+    @Test
+    public void createTupleArrayTest() throws Exception {
+        DirectTupleSchema schema = TupleSchema.builder().
+                addField("aByte", Byte.TYPE).
+                addField("aChar", Character.TYPE).
+                addField("aInt", Integer.TYPE).
+                addField("aShort", Short.TYPE).
+                addField("aFloat", Float.TYPE).
+                addField("aLong", Long.TYPE).
+                addField("aDouble", Double.TYPE).
+                directMemory().
+                build();
+
+        FastTuple[] tuples = schema.createTupleArray(10);
+        assertEquals(10, tuples.length);
+
+        for (int i=0; i < 10; i++) {
+            assertNotNull(tuples[i]);
+
+            tuples[i].indexedSetByte(1, (byte)1);
+            tuples[i].indexedSetChar(2, 'b');
+            tuples[i].indexedSetInt(3, 4);
+            tuples[i].indexedSetShort(4, (short)6);
+            tuples[i].indexedSetFloat(5, 0.125f);
+            tuples[i].indexedSetLong(6, 1000000l);
+            tuples[i].indexedSetDouble(7, 0.125);
+
+            assertEquals(1, tuples[i].indexedGetByte(1));
+            assertEquals('b', tuples[i].indexedGetChar(2));
+            assertEquals(4, tuples[i].indexedGetInt(3));
+            assertEquals(6, tuples[i].indexedGetShort(4));
+            assertEquals(0.125f, tuples[i].indexedGetFloat(5), 0.001);
+            assertEquals(1000000l, tuples[i].indexedGetLong(6));
+            assertEquals(0.125, tuples[i].indexedGetDouble(7), 0.001);
+        }
     }
 }
