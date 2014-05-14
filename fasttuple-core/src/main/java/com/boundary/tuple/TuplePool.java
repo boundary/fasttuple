@@ -13,6 +13,7 @@ public class TuplePool<T> {
     private Optional<Function<T,Void>> initializer;
     private Function<Integer,T[]> loader;
     private int size;
+    private int reloadSize;
     private boolean createWhenExhausted;
 
     public TuplePool(int size, boolean createWhenExhausted, Function<Integer,T[]> loader) {
@@ -20,7 +21,8 @@ public class TuplePool<T> {
     }
 
     public TuplePool(final int size, boolean createWhenExhausted, final Function<Integer,T[]> loader, Optional<Function<T,Void>> initializer) {
-        this.size = size;
+        this.size = 0;
+        this.reloadSize = size;
         this.initializer = initializer;
         this.createWhenExhausted = createWhenExhausted;
         this.loader = loader;
@@ -36,17 +38,9 @@ public class TuplePool<T> {
 
     public T checkout() {
         ArrayDeque<T> deque = pool.get();
-        if (deque.isEmpty()) {
-            if (createWhenExhausted) {
-                reload(deque);
-            } else {
-                throw new IllegalStateException("Tuple pool is exhausted.");
-            }
-        }
+        possiblyReload(deque);
         T obj = deque.pop();
-        if (initializer.isPresent()) {
-            initializer.get().apply(obj);
-        }
+        initialize(obj);
         return obj;
     }
 
@@ -54,8 +48,29 @@ public class TuplePool<T> {
         pool.get().push(obj);
     }
 
-    protected void reload(ArrayDeque<T> deque) {
-        for (T tuple : loader.apply(size)) {
+    public int getSize() {
+        return size;
+    }
+
+    private void initialize(T obj) {
+        if (initializer.isPresent()) {
+            initializer.get().apply(obj);
+        }
+    }
+
+    private void possiblyReload(ArrayDeque<T> deque) {
+        if (deque.isEmpty()) {
+            if (createWhenExhausted) {
+                reload(deque);
+            } else {
+                throw new IllegalStateException("Tuple pool is exhausted.");
+            }
+        }
+    }
+
+    private void reload(ArrayDeque<T> deque) {
+        size += reloadSize;
+        for (T tuple : loader.apply(reloadSize)) {
             deque.push(tuple);
         }
     }
