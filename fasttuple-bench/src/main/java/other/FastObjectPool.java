@@ -1,4 +1,4 @@
-package com.boundary;
+package other;
 
 import sun.misc.Unsafe;
 
@@ -8,7 +8,10 @@ import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+/**
+ * Taken from: http://www.javacodegeeks.com/2013/07/lock-less-java-object-pool.html
+ *
+ */
 public class FastObjectPool<T> {
 
     private Holder<T>[] objects;
