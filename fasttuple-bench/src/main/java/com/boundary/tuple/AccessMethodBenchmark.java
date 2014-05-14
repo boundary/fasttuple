@@ -53,7 +53,6 @@ public class AccessMethodBenchmark {
     ConstantCallSite mhgb;
     ConstantCallSite mhgc;
 
-
     public AccessMethodBenchmark() {
         try {
             containers = new ArrayBlockingQueue<Container>(100);
@@ -101,148 +100,152 @@ public class AccessMethodBenchmark {
     }
 
     @GenerateMicroBenchmark
-    public void testAllocateSetAndDeallocate() {
+    public long testAllocateSetAndDeallocate() {
         long record = schema.createRecord();
         schema.setLong(record, 0, 100);
         schema.setInt(record, 1, 200);
         schema.setShort(record, 2, (short)300);
-        if (schema.getLong(record, 0) + schema.getInt(record, 1) + schema.getShort(record, 2) == System.nanoTime())
-            throw new IllegalStateException();
+
+        long r = schema.getLong(record, 0) + schema.getInt(record, 1) + schema.getShort(record, 2);
         schema.destroy(record);
+        return r;
     }
 
     @GenerateMicroBenchmark
-    public void testOffheapSchemaSet() {
+    public long testOffheapSchemaSet() {
         schema.setLong(record2, 0, 100);
         schema.setInt(record2, 1, 200);
         schema.setShort(record2, 2, (short)300);
-        if (schema.getLong(record2, 0) + schema.getInt(record2, 1) + schema.getShort(record2, 2) == System.nanoTime())
-            throw new IllegalStateException();
+        return schema.getLong(record2, 0) + schema.getInt(record2, 1) + schema.getShort(record2, 2);
     }
 
     @GenerateMicroBenchmark
-    public void testOffheapDirectSet() {
+    public long testOffheapDirectSet() {
         Unsafe un = Coterie.unsafe();
         un.putLong(record2 + 0L, 100);
         un.putInt(record2 + 8L, 200);
         un.putShort(record2 + 16L, (short)300);
-        if (un.getLong(record2 + 0L) + un.getInt(record2 + 8L) + un.getShort(record2 + 16L) == System.nanoTime())
-            throw new IllegalStateException();
+        return un.getLong(record2 + 0L) + un.getInt(record2 + 8L) + un.getShort(record2 + 16L);
     }
 
     @GenerateMicroBenchmark
-    public void testInvokeDynamic() throws Throwable {
+    public long testInvokeDynamic() throws Throwable {
         Container container = new Container(0,0,(short)0);
         mhsa.dynamicInvoker().invoke(container, 100L);
         mhsb.dynamicInvoker().invoke(container, 200);
         mhsc.dynamicInvoker().invoke(container, (short)300L);
-        if ((Long)mhga.dynamicInvoker().invoke(container) + (Integer)mhgb.dynamicInvoker().invoke(container) + (Short)mhgc.dynamicInvoker().invoke(container) == System.nanoTime())
-            throw new IllegalStateException();
+        return (Long)mhga.dynamicInvoker().invoke(container) + (Integer)mhgb.dynamicInvoker().invoke(container) + (Short)mhgc.dynamicInvoker().invoke(container);
     }
 
     @GenerateMicroBenchmark
-    public void testStormTuple() {
+    public long testStormTuple() {
         List<Long> list = new ArrayList<Long>();
         list.add(100L);
         list.add(200L);
         list.add(300L);
-        if (list.get(0) + list.get(1) + list.get(2) == System.nanoTime()) throw new IllegalStateException();
+        return list.get(0) + list.get(1) + list.get(2);
     }
 
     @GenerateMicroBenchmark
-    public void testLongArray() {
+    public long testLongArray() {
         long[] longs = new long[3];
         longs[0] = 100L;
         longs[1] = 200;
         longs[2] = (short)300;
-        if (longs[0] + longs[1] + longs[2] == System.nanoTime()) throw new IllegalStateException();
+        return longs[0] + longs[1] + longs[2];
     }
 
     @GenerateMicroBenchmark
-    public void testClass() {
+    public long testClass() {
         Container container = new Container(0, 0, (short)0);
         container.a = 100;
         container.b = 200;
         container.c = 300;
-        if (container.a + container.b + container.c == System.nanoTime()) throw new IllegalStateException();
+        return container.a + container.b + container.c;
     }
 
     @GenerateMicroBenchmark
-    public void testReflectField() throws Exception {
+    public long testReflectField() throws Exception {
         Container container = new Container(0, 0, (short)0);
         fieldA.setLong(container, 100);
         fieldB.setInt(container, 200);
         fieldC.setShort(container, (short)300);
-        if (fieldA.getLong(container) + fieldB.getInt(container) + fieldC.getShort(container) == System.nanoTime()) throw new IllegalStateException();
+        return fieldA.getLong(container) + fieldB.getInt(container) + fieldC.getShort(container);
     }
 
     @GenerateMicroBenchmark
-    public void testQueuedObject() throws InterruptedException {
+    public long testQueuedObject() throws InterruptedException {
         Container container = containers.take();
         container.a = 100;
         container.b = 200;
         container.c = 300;
-        if (container.a + container.b + container.c == System.nanoTime()) throw new IllegalStateException();
+        long r = container.a + container.b + container.c;
         containers.offer(container);
+        return r;
     }
 
     @GenerateMicroBenchmark
-    public void testPooledObject() throws Exception {
+    public long testPooledObject() throws Exception {
         Container container = pool.getObj();
         container.a = 100;
         container.b = 200;
         container.c = 300;
-        if (container.a + container.b + container.c == System.nanoTime()) throw new IllegalStateException();
+        long l = container.a + container.b + container.c;
         pool.returnObj(container);
+        return l;
     }
 
     @GenerateMicroBenchmark
-    public void testFastPool() throws Exception {
+    public long testFastPool() throws Exception {
         FastObjectPool.Holder<Container> holder = pool2.take();
         Container container = holder.getValue();
         container.a = 100;
         container.b = 200;
         container.c = 300;
-        if (container.a + container.b + container.c == System.nanoTime()) throw new IllegalStateException();
+        long r = container.a + container.b + container.c;
         pool2.release(holder);
+        return r;
     }
 
     @GenerateMicroBenchmark
-    public void testTuplePool() throws Exception {
+    public long testTuplePool() throws Exception {
         Container container = pool3.checkout();
         container.a = 100;
         container.b = 200;
         container.c = 300;
-        if (container.a + container.b + container.c == System.nanoTime()) throw new IllegalStateException();
+        long r = container.a + container.b + container.c;
         pool3.release(container);
+        return r;
     }
 
     @GenerateMicroBenchmark
-    public void testFastTuplePreAllocIndexedBoxing() throws Exception {
+    public long testFastTuplePreAllocIndexedBoxing() throws Exception {
         FastTuple tuple = schema.createTuple(record2);
         tuple.set(1, 100L);
         tuple.set(2, 200);
         tuple.set(3, (short) 300);
-        if ((Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3) == System.nanoTime()) throw new IllegalStateException();
+        return (Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3);
     }
 
     @GenerateMicroBenchmark
-    public void testFastTuplePreAllocIndexed() throws Exception {
+    public long testFastTuplePreAllocIndexed() throws Exception {
         FastTuple tuple = schema.createTuple(record2);
         tuple.setLong(1, 100L);
         tuple.setInt(2, 200);
         tuple.setShort(3, (short) 300);
-        if (tuple.getLong(1) + tuple.getInt(2) + tuple.getShort(3) == System.nanoTime()) throw new IllegalStateException();
+        return tuple.getLong(1) + tuple.getInt(2) + tuple.getShort(3);
     }
 
     @GenerateMicroBenchmark
-    public void testFastTupleStaticBinding() throws Exception {
+    public long testFastTupleStaticBinding() throws Exception {
         StaticBinding tuple = (StaticBinding)schema.createTuple(record2);
         tuple.a(100L);
         tuple.b(200);
         tuple.c((short)300);
-        if (tuple.a() + tuple.b() + tuple.c() == System.nanoTime()) throw new IllegalStateException();
+        return tuple.a() + tuple.b() + tuple.c();
     }
+
+
 
     public static interface StaticBinding {
         public void a(long a);
