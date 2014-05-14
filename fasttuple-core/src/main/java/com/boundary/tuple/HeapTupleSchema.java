@@ -1,14 +1,16 @@
 package com.boundary.tuple;
 
 import com.boundary.tuple.codegen.HeapTupleCodeGenerator;
-
-import java.lang.reflect.Constructor;
+import com.boundary.tuple.codegen.TupleAllocatorGenerator;
+import com.boundary.tuple.unsafe.Coterie;
+import sun.misc.Unsafe;
 
 /**
  * Created by cliff on 5/9/14.
  */
 public class HeapTupleSchema extends TupleSchema {
-    protected Constructor cons;
+    private static final Unsafe unsafe = Coterie.unsafe();
+    private TupleAllocatorGenerator.TupleAllocator allocator;
 
     public static class Builder extends TupleSchema.Builder {
 
@@ -29,12 +31,12 @@ public class HeapTupleSchema extends TupleSchema {
     @Override
     protected void generateClass() throws Exception {
         this.clazz = new HeapTupleCodeGenerator(iface, fieldNames, fieldTypes).cookToClass();
-        this.cons = clazz.getConstructor();
+        this.allocator = new TupleAllocatorGenerator(clazz).createAllocator();
     }
 
     @Override
     public FastTuple createTuple() throws Exception {
-        return (FastTuple)cons.newInstance();
+        return allocator.allocate();
     }
 
     @Override

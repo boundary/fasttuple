@@ -1,6 +1,7 @@
 package com.boundary.tuple;
 
 import com.boundary.tuple.codegen.DirectTupleCodeGenerator;
+import com.boundary.tuple.codegen.TupleAllocatorGenerator;
 import com.boundary.tuple.unsafe.Coterie;
 import sun.misc.Unsafe;
 
@@ -19,6 +20,7 @@ public class DirectTupleSchema extends TupleSchema {
     protected int byteSize;
     protected long addressOffset;
     protected final int wordSize;
+    protected TupleAllocatorGenerator.TupleAllocator allocator;
 
     private static final Unsafe unsafe = Coterie.unsafe();
 
@@ -122,7 +124,7 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     public FastTuple createTuple(long address) throws Exception {
-        FastTuple tuple = (FastTuple) unsafe.allocateInstance(clazz);
+        FastTuple tuple = allocator.allocate();
         unsafe.putLong(tuple, addressOffset, address);
         return tuple;
     }
@@ -165,6 +167,8 @@ public class DirectTupleSchema extends TupleSchema {
         if (this.clazz == null) {
             this.clazz = new DirectTupleCodeGenerator(iface, fieldNames, fieldTypes, layout).cookToClass();
             this.addressOffset = unsafe.objectFieldOffset(clazz.getField("address"));
+            TupleAllocatorGenerator generator = new TupleAllocatorGenerator(clazz);
+            this.allocator = generator.createAllocator();
         }
     }
 
