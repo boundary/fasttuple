@@ -51,7 +51,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
 
     protected Java.CompilationUnit makeCompilationUnit() throws CompileException {
         Java.CompilationUnit cu = new Java.CompilationUnit(null);
-        Location loc = new Location(null, ((short) 0), ((short) 0));
+        Location loc = new Location("", ((short) 0), ((short) 0));
         cu.setPackageDeclaration(new Java.PackageDeclaration(loc, "com.boundary.tuple"));
         cu.addImportDeclaration(new Java.CompilationUnit.SingleTypeImportDeclaration(loc, "com.boundary.tuple.unsafe.Coterie".split("\\.")));
         Class[] ifaces;
@@ -111,7 +111,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                  null,
                  new Java.Modifiers(Mod.PUBLIC),
                  classToType(loc, Object.class),
-                 "indexedGet",
+                 "get",
                  new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
                          new Java.FunctionDeclarator.FormalParameter(loc,true, classToType(loc, Integer.TYPE), "index")}, false),
                  new Java.Type[] {},
@@ -129,7 +129,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
                 new Java.BasicType(loc, primIndex(types[i])),
-                "indexedGet" + capitalize(types[i].getName()),
+                "get" + capitalize(types[i].getName()),
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
                         new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index")}, false),
                 new Java.Type[] {},
@@ -149,7 +149,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
                 new Java.BasicType(loc, Java.BasicType.VOID),
-                "indexedSet" + capitalize(types[i].getName()),
+                "set" + capitalize(types[i].getName()),
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
                         new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index"),
                         new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, primIndex(types[i])), "value")
@@ -169,7 +169,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
                 classToType(loc, Void.TYPE),
-                "indexedSet",
+                "set",
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
                         new Java.FunctionDeclarator.FormalParameter(loc, true, classToType(loc, Integer.TYPE), "index"),
                         new Java.FunctionDeclarator.FormalParameter(loc, true, classToType(loc, Object.class), "value")

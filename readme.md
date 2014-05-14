@@ -39,6 +39,9 @@ Interaction with FastTuple primarily takes place via the TupleSchema class.  Eac
 	//creates a new tuple, allocating memory off heap
 	FastTuple tuple = schema.createTuple();
 	//do some stuff
+	tuple.setLong(1, 10000L);
+	tuple.setInt(2, 50);
+	tuple.setShort(3, (short)256);
 	//if you don't destroy the tuple you are leaking memory
 	schema.destroy(tuple);
 ```
@@ -60,6 +63,9 @@ adjacent tuples are manipulated concurrently by different threads: an adequately
 	//creates a new tuple, allocating memory off heap
 	FastTuple tuple = schema.createTuple();
 	//do some stuff
+	tuple.setLong(1, 10000L);
+	tuple.setInt(2, 50);
+	tuple.setShort(3, (short)256);
 	//if you don't destroy the tuple you are leaking memory
 	schema.destroy(tuple);
 ```
@@ -81,5 +87,12 @@ Each schema will allocate a tuple pool per accessing thread if a poolSize is set
 	//checks a tuple from the pool
 	FastTuple tuple = schema.pool().checkout();
 	//do some stuff
+	tuple.setLong(1, 10000L);
+	tuple.setInt(2, 50);
+	tuple.setShort(3, (short)256);
 	//if you don't check the tuple back in you either leak memory or objects. bad dog.
 	schema.pool().release(tuple);
+```
+
+## Performance
+

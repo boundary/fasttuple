@@ -11,7 +11,7 @@ public abstract class FastTuple {
      * @param i Index of the field to get. Counting starts at 1.
      * @return The value.
      */
-    public abstract Object indexedGet(int i);
+    public abstract Object get(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -20,7 +20,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a long.
      */
-    public abstract long   indexedGetLong(int i);
+    public abstract long getLong(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -29,7 +29,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not an int.
      */
-    public abstract int    indexedGetInt(int i);
+    public abstract int getInt(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -38,7 +38,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a short.
      */
-    public abstract short  indexedGetShort(int i);
+    public abstract short getShort(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -47,7 +47,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a char.
      */
-    public abstract char   indexedGetChar(int i);
+    public abstract char getChar(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -56,7 +56,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a byte.
      */
-    public abstract byte   indexedGetByte(int i);
+    public abstract byte getByte(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -65,7 +65,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a float.
      */
-    public abstract float  indexedGetFloat(int i);
+    public abstract float getFloat(int i);
 
     /**
      * Does an unboxed get on a tuple field.
@@ -74,7 +74,7 @@ public abstract class FastTuple {
      * @return The value.
      * @throws java.lang.IllegalArgumentException if the specified field is not a double.
      */
-    public abstract double indexedGetDouble(int i);
+    public abstract double getDouble(int i);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -83,7 +83,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a long.
      */
-    public abstract void   indexedSetLong(int i, long value);
+    public abstract void setLong(int i, long value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -92,7 +92,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not an int.
      */
-    public abstract void   indexedSetInt(int i, int value);
+    public abstract void setInt(int i, int value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -101,7 +101,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a short.
      */
-    public abstract void   indexedSetShort(int i, short value);
+    public abstract void setShort(int i, short value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -110,7 +110,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a char.
      */
-    public abstract void   indexedSetChar(int i, char value);
+    public abstract void setChar(int i, char value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -119,7 +119,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a byte.
      */
-    public abstract void   indexedSetByte(int i, byte value);
+    public abstract void setByte(int i, byte value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -128,7 +128,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a float.
      */
-    public abstract void   indexedSetFloat(int i, float value);
+    public abstract void setFloat(int i, float value);
 
     /**
      * Does an unboxed set on a tuple field.
@@ -137,7 +137,7 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the specified field is not a double.
      */
-    public abstract void   indexedSetDouble(int i, double value);
+    public abstract void setDouble(int i, double value);
 
     /**
      * Does a boxed set on a tuple field.
@@ -146,5 +146,5 @@ public abstract class FastTuple {
      * @param value The value to set.
      * @throws java.lang.IllegalArgumentException if the
      */
-    public abstract void   indexedSet(int i, Object value);
+    public abstract void set(int i, Object value);
 }

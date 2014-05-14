@@ -108,21 +108,21 @@ public class DirectTupleSchemaTest {
         for (int i=0; i < 10; i++) {
             assertNotNull(tuples[i]);
 
-            tuples[i].indexedSetByte(1, (byte)1);
-            tuples[i].indexedSetChar(2, 'b');
-            tuples[i].indexedSetInt(3, 4);
-            tuples[i].indexedSetShort(4, (short)6);
-            tuples[i].indexedSetFloat(5, 0.125f);
-            tuples[i].indexedSetLong(6, 1000000l);
-            tuples[i].indexedSetDouble(7, 0.125);
+            tuples[i].setByte(1, (byte) 1);
+            tuples[i].setChar(2, 'b');
+            tuples[i].setInt(3, 4);
+            tuples[i].setShort(4, (short) 6);
+            tuples[i].setFloat(5, 0.125f);
+            tuples[i].setLong(6, 1000000l);
+            tuples[i].setDouble(7, 0.125);
 
-            assertEquals(1, tuples[i].indexedGetByte(1));
-            assertEquals('b', tuples[i].indexedGetChar(2));
-            assertEquals(4, tuples[i].indexedGetInt(3));
-            assertEquals(6, tuples[i].indexedGetShort(4));
-            assertEquals(0.125f, tuples[i].indexedGetFloat(5), 0.001);
-            assertEquals(1000000l, tuples[i].indexedGetLong(6));
-            assertEquals(0.125, tuples[i].indexedGetDouble(7), 0.001);
+            assertEquals(1, tuples[i].getByte(1));
+            assertEquals('b', tuples[i].getChar(2));
+            assertEquals(4, tuples[i].getInt(3));
+            assertEquals(6, tuples[i].getShort(4));
+            assertEquals(0.125f, tuples[i].getFloat(5), 0.001);
+            assertEquals(1000000l, tuples[i].getLong(6));
+            assertEquals(0.125, tuples[i].getDouble(7), 0.001);
         }
     }
 }

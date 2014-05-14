@@ -123,32 +123,32 @@ public class HeapTupleCodeGeneratorTest {
     }
 
     public void assertIndexedGetterAndSetterRoundTrip(FastTuple tuple, int index, Object value) {
-        tuple.indexedSet(index, value);
-        assertEquals(value, tuple.indexedGet(index));
+        tuple.set(index, value);
+        assertEquals(value, tuple.get(index));
     }
 
     public void assertIndexedTypedGetterAndSetterRoundTrip(FastTuple tuple, int index, Object value) {
         if (value.getClass().equals(Long.class)) {
-            tuple.indexedSetLong(index, (Long)value);
-            assertEquals(value, tuple.indexedGetLong(index));
+            tuple.setLong(index, (Long) value);
+            assertEquals(value, tuple.getLong(index));
         } else if (value.getClass().equals(Short.class)) {
-            tuple.indexedSetShort(index, (Short)value);
-            assertEquals(value, tuple.indexedGetShort(index));
+            tuple.setShort(index, (Short) value);
+            assertEquals(value, tuple.getShort(index));
         } else if (value.getClass().equals(Character.class)) {
-            tuple.indexedSetChar(index, (Character)value);
-            assertEquals(value, tuple.indexedGetChar(index));
+            tuple.setChar(index, (Character) value);
+            assertEquals(value, tuple.getChar(index));
         } else if (value.getClass().equals(Integer.class)) {
-            tuple.indexedSetInt(index, (Integer)value);
-            assertEquals(value, tuple.indexedGetInt(index));
+            tuple.setInt(index, (Integer) value);
+            assertEquals(value, tuple.getInt(index));
         } else if (value.getClass().equals(Byte.class)) {
-            tuple.indexedSetByte(index, (Byte)value);
-            assertEquals(value, tuple.indexedGetByte(index));
+            tuple.setByte(index, (Byte) value);
+            assertEquals(value, tuple.getByte(index));
         } else if (value.getClass().equals(Float.class)) {
-            tuple.indexedSetFloat(index, (Float)value);
-            assertEquals(value, tuple.indexedGetFloat(index));
+            tuple.setFloat(index, (Float) value);
+            assertEquals(value, tuple.getFloat(index));
         } else if (value.getClass().equals(Double.class)) {
-            tuple.indexedSetDouble(index, (Double)value);
-            assertEquals(value, tuple.indexedGetDouble(index));
+            tuple.setDouble(index, (Double) value);
+            assertEquals(value, tuple.getDouble(index));
         }
     }
 
