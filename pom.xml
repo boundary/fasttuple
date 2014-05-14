@@ -83,6 +83,10 @@
       <name>Cliff Moon</name>
       <email>cliff@boundary.com</email>
     </developer>
+    <developer>
+      <name>Philip Warren</name>
+      <email>philip@boundary.com</email>
+    </developer>
   </developers>
 
   <licenses>
