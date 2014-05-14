@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
  * Created by cliff on 5/2/14.
  */
 public class Coterie {
-    private static Unsafe theUnsafe;
+    private static final Unsafe theUnsafe;
 
     static {
         try {

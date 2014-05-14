@@ -14,13 +14,13 @@ import static com.boundary.tuple.SizeOf.sizeOf;
  */
 public class DirectTupleSchema extends TupleSchema {
     // layout is the mapping from the given logical index to an offset in the tuple
-    protected int[] layout;
-    protected int[] widths;
+    protected final int[] layout;
+    protected final int[] widths;
     protected int byteSize;
     protected long addressOffset;
-    protected int wordSize;
+    protected final int wordSize;
 
-    private static Unsafe unsafe = Coterie.unsafe();
+    private static final Unsafe unsafe = Coterie.unsafe();
 
     public static class Builder extends TupleSchema.Builder {
         protected int wordSize = 8;
@@ -55,7 +55,6 @@ public class DirectTupleSchema extends TupleSchema {
         this.wordSize = builder.wordSize;
         generateLayout();
         generateClass();
-        generatePool();
     }
 
     public long getLong(long address, int index) {
@@ -181,8 +180,7 @@ public class DirectTupleSchema extends TupleSchema {
             }
         });
         int offset = 0;
-        for (int i = 0; i < members.length; i++) {
-            Member m = members[i];
+        for (Member m : members) {
             layout[m.index] = offset;
             widths[m.index] = m.size;
             offset += m.size;
@@ -192,8 +190,8 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     private static class Member {
-        public int index;
-        public int size;
+        public final int index;
+        public final int size;
 
         public Member(int index, int size) {
             this.index = index;

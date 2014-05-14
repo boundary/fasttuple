@@ -24,7 +24,6 @@ public class HeapTupleSchema extends TupleSchema {
     public HeapTupleSchema(Builder builder) throws Exception {
         super(builder);
         generateClass();
-        generatePool();
     }
 
     @Override

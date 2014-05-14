@@ -6,19 +6,18 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by cliff on 5/2/14.
  */
 public abstract class TupleSchema {
-    protected String[] fieldNames;
-    protected Class[] fieldTypes;
-    protected Class iface;
+    protected final String[] fieldNames;
+    protected final Class[] fieldTypes;
+    protected final Class iface;
     protected Class clazz;
-    protected int poolSize;
-    protected boolean createWhenExhausted;
-    protected TuplePool<FastTuple> pool;
+    protected final TuplePool<FastTuple> pool;
 
     public static Builder builder() {
         return new Builder();
@@ -37,7 +36,16 @@ public abstract class TupleSchema {
             Preconditions.checkArgument(iface.isInterface(),
                     iface.getName() +  " is not an interface");
         }
-        this.poolSize = builder.poolSize;
+        this.pool = new TuplePool<>(builder.poolSize, builder.createWhenExhausted, new Function<Integer, FastTuple[]>() {
+            @Override
+            public FastTuple[] apply(Integer integer) {
+                try {
+                    return createTupleArray(integer);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
     }
 
     public static class Builder {
@@ -93,9 +101,7 @@ public abstract class TupleSchema {
         }
 
         public Builder addFieldNames(String... fieldNames) {
-            for (String st : fieldNames) {
-                fn.add(st);
-            }
+            Collections.addAll(fn, fieldNames);
             return this;
         }
 
@@ -107,9 +113,7 @@ public abstract class TupleSchema {
         }
 
         public Builder addFieldTypes(Class... fieldTypes) {
-            for (Class c : fieldTypes) {
-                ft.add(c);
-            }
+            Collections.addAll(ft, fieldTypes);
             return this;
         }
 
@@ -235,19 +239,6 @@ public abstract class TupleSchema {
      */
     public TuplePool<FastTuple> pool() {
         return pool;
-    }
-
-    protected void generatePool() throws Exception {
-        this.pool = new TuplePool<>(poolSize, createWhenExhausted, new Function<Integer, FastTuple[]>() {
-            @Override
-            public FastTuple[] apply(Integer integer) {
-                try {
-                    return createTupleArray(integer);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
     }
 
     public ClassLoader getClassLoader() {
