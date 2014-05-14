@@ -129,15 +129,11 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     public long createRecord() {
-        long address = unsafe.allocateMemory(byteSize);
-        unsafe.setMemory(address, byteSize, (byte) 0);
-        return address;
+        return unsafe.allocateMemory(byteSize);
     }
 
     public long createRecordArray(long size) {
-        long address = unsafe.allocateMemory(size * byteSize);
-        unsafe.setMemory(address, byteSize * size, (byte)0);
-        return address;
+        return unsafe.allocateMemory(size * byteSize);
     }
 
     public FastTuple createTuple() throws Exception {
