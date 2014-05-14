@@ -3,7 +3,9 @@ package com.boundary.tuple;
 /**
  * Created by cliff on 5/3/14.
  */
-public class SizeOf {
+public final class SizeOf {
+
+    private SizeOf() {}
 
     public static int sizeOf(Class c) {
         if (c.equals(Byte.TYPE)) {
