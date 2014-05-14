@@ -11,7 +11,7 @@ import org.codehaus.janino.Mod;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import static java.lang.Character.toUpperCase;
-
+import static com.boundary.tuple.codegen.CodegenUtil.*;
 
 /**
  * Created by cliff on 5/3/14.
@@ -73,19 +73,9 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         for (Java.FieldDeclaration dec : generateFields()) {
             cd.addFieldDeclaration(dec);
         }
-        cd.addConstructor(new Java.ConstructorDeclarator(
-                loc,
-                null, //doc
-                new Java.Modifiers(Mod.PUBLIC),
-                new Java.FunctionDeclarator.FormalParameters(
-                        loc,
-                        new Java.FunctionDeclarator.FormalParameter[] {},
-                        false //variable arity
-                ),
-                new Java.Type[] {},
-                null,
-                Lists.<Java.BlockStatement>newArrayList())
-        );
+
+        cd.addConstructor(nullConstructor(loc));
+
         for (int i = 0; i < fieldNames.length; i++) {
             String name = fieldNames[i];
             Class type = fieldTypes[i];
