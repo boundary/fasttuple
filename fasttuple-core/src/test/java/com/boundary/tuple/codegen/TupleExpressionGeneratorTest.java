@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * Created by cliff on 5/12/14.
  */
-public class TupleExpressionTest {
+public class TupleExpressionGeneratorTest {
 
     @Test
     public void testGetLongOut() throws Exception {
@@ -25,7 +25,7 @@ public class TupleExpressionTest {
         tuple.setLong(2, 600L);
         tuple.setLong(3, 1000L);
 
-        TupleExpression.LongEvaluator eval = TupleExpression.builder().expression("tuple.a + tuple.b + tuple.c").schema(schema).returnLong();
+        TupleExpressionGenerator.LongTupleExpression eval = TupleExpressionGenerator.builder().expression("tuple.a + tuple.b + tuple.c").schema(schema).returnLong();
         assertEquals(1700L, eval.evaluate(tuple));
     }
 
@@ -39,7 +39,7 @@ public class TupleExpressionTest {
                 build();
 
         FastTuple tuple = schema.createTuple();
-        TupleExpression.Evaluator eval = TupleExpression.builder().expression("tuple.a(100), tuple.b(200), tuple.c(300)").schema(schema).returnVoid();
+        TupleExpressionGenerator.TupleExpression eval = TupleExpressionGenerator.builder().expression("tuple.a(100), tuple.b(200), tuple.c(300)").schema(schema).returnVoid();
         eval.evaluate(tuple);
         assertEquals(100L, tuple.getLong(1));
         assertEquals(200, tuple.getLong(2));

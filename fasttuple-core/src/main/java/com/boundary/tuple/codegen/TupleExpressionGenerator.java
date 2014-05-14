@@ -10,43 +10,45 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.boundary.tuple.codegen.CodegenUtil.*;
+
 /**
  * Created by cliff on 5/12/14.
  */
-public class TupleExpression extends ClassBodyEvaluator {
-    public static interface Evaluator {
+public class TupleExpressionGenerator extends ClassBodyEvaluator {
+    public static interface TupleExpression {
         public void evaluate(FastTuple tuple);
     }
 
-    public static interface ObjectEvaluator {
+    public static interface ObjectTupleExpression {
         public Object evaluate(FastTuple tuple);
     }
 
-    public static interface LongEvaluator {
+    public static interface LongTupleExpression {
         public long evaluate(FastTuple tuple);
     }
 
-    public static interface IntEvaluator {
+    public static interface IntTupleExpression {
         public long evaluate(FastTuple tuple);
     }
 
-    public static interface ShortEvaluator {
+    public static interface ShortTupleExpression {
         public short evaluate(FastTuple tuple);
     }
 
-    public static interface CharEvaluator {
+    public static interface CharTupleExpression {
         public char evaluate(FastTuple tuple);
     }
 
-    public static interface ByteEvaluator {
+    public static interface ByteTupleExpression {
         public byte evaluate(FastTuple tuple);
     }
 
-    public static interface FloatEvaluator {
+    public static interface FloatTupleExpression {
         public byte evaluate(FastTuple tuple);
     }
 
-    public static interface DoubleEvaluator {
+    public static interface DoubleTupleExpression {
         public byte evaluate(FastTuple tuple);
     }
 
@@ -79,45 +81,45 @@ public class TupleExpression extends ClassBodyEvaluator {
             return this;
         }
 
-        public Evaluator returnVoid() throws Exception {
-            return (Evaluator) new TupleExpression(schema, expression, Evaluator.class, Void.TYPE).evaluator();
+        public TupleExpression returnVoid() throws Exception {
+            return (TupleExpression) new TupleExpressionGenerator(schema, expression, TupleExpression.class, Void.TYPE).evaluator();
         }
 
-        public ObjectEvaluator returnObject() throws Exception {
-            return (ObjectEvaluator) new TupleExpression(schema, expression, ObjectEvaluator.class, Object.class).evaluator();
+        public ObjectTupleExpression returnObject() throws Exception {
+            return (ObjectTupleExpression) new TupleExpressionGenerator(schema, expression, ObjectTupleExpression.class, Object.class).evaluator();
         }
 
-        public LongEvaluator returnLong() throws Exception {
-            return (LongEvaluator) new TupleExpression(schema, expression, LongEvaluator.class, Long.TYPE).evaluator();
+        public LongTupleExpression returnLong() throws Exception {
+            return (LongTupleExpression) new TupleExpressionGenerator(schema, expression, LongTupleExpression.class, Long.TYPE).evaluator();
         }
 
-        public IntEvaluator returnInt() throws Exception {
-            return (IntEvaluator) new TupleExpression(schema, expression, IntEvaluator.class, Integer.TYPE).evaluator();
+        public IntTupleExpression returnInt() throws Exception {
+            return (IntTupleExpression) new TupleExpressionGenerator(schema, expression, IntTupleExpression.class, Integer.TYPE).evaluator();
         }
 
-        public ShortEvaluator returnShort() throws Exception {
-            return (ShortEvaluator) new TupleExpression(schema, expression, ShortEvaluator.class, Short.TYPE).evaluator();
+        public ShortTupleExpression returnShort() throws Exception {
+            return (ShortTupleExpression) new TupleExpressionGenerator(schema, expression, ShortTupleExpression.class, Short.TYPE).evaluator();
         }
 
-        public CharEvaluator returnChar() throws Exception {
-            return (CharEvaluator) new TupleExpression(schema, expression, CharEvaluator.class, Character.TYPE).evaluator();
+        public CharTupleExpression returnChar() throws Exception {
+            return (CharTupleExpression) new TupleExpressionGenerator(schema, expression, CharTupleExpression.class, Character.TYPE).evaluator();
         }
 
-        public ByteEvaluator returnByte() throws Exception {
-            return (ByteEvaluator) new TupleExpression(schema, expression, ByteEvaluator.class, Byte.TYPE).evaluator();
+        public ByteTupleExpression returnByte() throws Exception {
+            return (ByteTupleExpression) new TupleExpressionGenerator(schema, expression, ByteTupleExpression.class, Byte.TYPE).evaluator();
         }
 
-        public FloatEvaluator returnFloat() throws Exception {
-            return (FloatEvaluator) new TupleExpression(schema, expression, FloatEvaluator.class, Float.TYPE).evaluator();
+        public FloatTupleExpression returnFloat() throws Exception {
+            return (FloatTupleExpression) new TupleExpressionGenerator(schema, expression, FloatTupleExpression.class, Float.TYPE).evaluator();
         }
 
-        public DoubleEvaluator returnDouble() throws Exception {
-            return (DoubleEvaluator) new TupleExpression(schema, expression, DoubleEvaluator.class, Double.TYPE).evaluator();
+        public DoubleTupleExpression returnDouble() throws Exception {
+            return (DoubleTupleExpression) new TupleExpressionGenerator(schema, expression, DoubleTupleExpression.class, Double.TYPE).evaluator();
         }
 
     }
 
-    private TupleExpression(TupleSchema schema, String expression, Class iface, Class returnType) throws Exception {
+    private TupleExpressionGenerator(TupleSchema schema, String expression, Class iface, Class returnType) throws Exception {
         this.schema = schema;
         this.expression = expression;
         this.iface = iface;
@@ -130,7 +132,7 @@ public class TupleExpression extends ClassBodyEvaluator {
         Scanner scanner = new Scanner(null, new StringReader(expression));
         Parser parser = new Parser(scanner);
         Location loc = parser.location();
-        String className = "Evaluator" + counter.incrementAndGet();
+        String className = "TupleExpression" + counter.incrementAndGet();
         setClassName(packageName + "." + className);
         Java.CompilationUnit cu = makeCompilationUnit(parser);
         cu.setPackageDeclaration(new Java.PackageDeclaration(loc, packageName));
@@ -145,19 +147,7 @@ public class TupleExpression extends ClassBodyEvaluator {
                 }
         );
         cu.addPackageMemberTypeDeclaration(cd);
-        cd.addConstructor(new Java.ConstructorDeclarator(
-                loc,
-                null, //doc
-                new Java.Modifiers(Mod.PUBLIC),
-                new Java.FunctionDeclarator.FormalParameters(
-                        loc,
-                        new Java.FunctionDeclarator.FormalParameter[] {},
-                        false //variable arity
-                ),
-                new Java.Type[] {},
-                null,
-                Lists.<Java.BlockStatement>newArrayList())
-        );
+        cd.addConstructor(nullConstructor(loc));
         cd.addDeclaredMethod(generateFrontendMethod(loc));
         cd.addDeclaredMethod(generateBackendMethod(parser));
         this.evaluatorClass = compileToClass(cu);

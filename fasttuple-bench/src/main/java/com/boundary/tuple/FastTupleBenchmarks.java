@@ -1,6 +1,6 @@
 package com.boundary.tuple;
 
-import com.boundary.tuple.codegen.TupleExpression;
+import com.boundary.tuple.codegen.TupleExpressionGenerator;
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -16,8 +16,8 @@ public class FastTupleBenchmarks {
     @State(Scope.Benchmark)
     public static class DirectSchema {
         public DirectTupleSchema schema;
-        public TupleExpression.Evaluator eval1;
-        public TupleExpression.LongEvaluator eval2;
+        public TupleExpressionGenerator.TupleExpression eval1;
+        public TupleExpressionGenerator.LongTupleExpression eval2;
         public ArrayDeque<FastTuple> deque;
         public FastTuple tuple;
 
@@ -31,11 +31,11 @@ public class FastTupleBenchmarks {
                     poolOfSize(10).
                     directMemory().
                     build();
-            eval1 = TupleExpression.builder().
+            eval1 = TupleExpressionGenerator.builder().
                     expression("tuple.a(100L), tuple.b(200), tuple.c((short)300)").
                     schema(schema).
                     returnVoid();
-            eval2 = TupleExpression.builder().
+            eval2 = TupleExpressionGenerator.builder().
                     expression("tuple.a() + tuple.b() + tuple.c()").
                     schema(schema).
                     returnLong();
@@ -52,10 +52,10 @@ public class FastTupleBenchmarks {
     @State(Scope.Benchmark)
     public static class HeapSchema {
         public HeapTupleSchema schema;
-        public TupleExpression.Evaluator eval1;
-        public TupleExpression.LongEvaluator eval2;
-        public TupleExpression.Evaluator eval3;
-        public TupleExpression.LongEvaluator eval4;
+        public TupleExpressionGenerator.TupleExpression eval1;
+        public TupleExpressionGenerator.LongTupleExpression eval2;
+        public TupleExpressionGenerator.TupleExpression eval3;
+        public TupleExpressionGenerator.LongTupleExpression eval4;
         public ArrayDeque<FastTuple> deque;
         public FastTuple tuple;
 
@@ -69,20 +69,20 @@ public class FastTupleBenchmarks {
                     implementInterface(StaticBinding.class).
                     heapMemory().
                     build();
-            eval1 = TupleExpression.builder().
+            eval1 = TupleExpressionGenerator.builder().
                     expression("tuple.a(100L), tuple.b(200), tuple.c((short)300)").
                     schema(schema).
                     returnVoid();
-            eval2 = TupleExpression.builder().
+            eval2 = TupleExpressionGenerator.builder().
                     expression("tuple.a() + tuple.b() + tuple.c()").
                     schema(schema).
                     returnLong();
 
-            eval3 = TupleExpression.builder().
+            eval3 = TupleExpressionGenerator.builder().
                     expression("tuple.a = 100L, tuple.b = 200, tuple.c = (short)300").
                     schema(schema).
                     returnVoid();
-            eval4 = TupleExpression.builder().
+            eval4 = TupleExpressionGenerator.builder().
                     expression("tuple.a + tuple.b + tuple.c").
                     schema(schema).
                     returnLong();
