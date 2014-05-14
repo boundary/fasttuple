@@ -249,4 +249,8 @@ public abstract class TupleSchema {
             }
         });
     }
+
+    public ClassLoader getClassLoader() {
+        return clazz.getClassLoader();
+    }
 }

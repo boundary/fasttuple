@@ -123,9 +123,6 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     public FastTuple createTuple(long address) throws Exception {
-        if (clazz == null) {
-            throw new IllegalStateException("generateClass must be called before createTuple");
-        }
         FastTuple tuple = (FastTuple) unsafe.allocateInstance(clazz);
         unsafe.putLong(tuple, addressOffset, address);
         return tuple;
