@@ -40,12 +40,12 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
     }
 
     public static class Builder {
-        protected List<String> fn;
-        protected List<Class> ft;
-        protected Class iface;
-        protected int poolSize;
-        protected int threads;
-        protected boolean createWhenExhausted = false;
+        private List<String> fn;
+        private List<Class> ft;
+        private Class iface;
+        private int poolSize;
+        private int threads;
+        private boolean createWhenExhausted = false;
 
         public Builder(Builder builder) {
             fn = new ArrayList<>(builder.fn);
