@@ -9,7 +9,6 @@ import sun.misc.Unsafe;
  * Created by cliff on 5/9/14.
  */
 public class HeapTupleSchema extends TupleSchema {
-    private static final Unsafe unsafe = Coterie.unsafe();
     private TupleAllocatorGenerator.TupleAllocator allocator;
 
     public static class Builder extends TupleSchema.Builder {
