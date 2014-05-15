@@ -35,7 +35,7 @@ public class TuplePool<T> {
         this.size = 0;
         this.reloadSize = size;
         this.createWhenExhausted = createWhenExhausted;
-        references = new CopyOnWriteArrayList<>();
+        this.references = new CopyOnWriteArrayList<>();
         this.loader = loader;
         this.destroyer = destroyer;
         this.initializer = Optional.fromNullable(initializer);
