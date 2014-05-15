@@ -1,7 +1,6 @@
 package com.boundary.tuple;
 
 import com.boundary.tuple.unsafe.Coterie;
-import com.google.common.base.Function;
 import nf.fr.eraasoft.pool.ObjectPool;
 import nf.fr.eraasoft.pool.PoolException;
 import nf.fr.eraasoft.pool.PoolSettings;
@@ -74,16 +73,24 @@ public class AccessMethodBenchmark {
                     return new Container(0,0,(short)0);
                 }
             }, 10);
-            pool3 = new TuplePool<Container>(10, false, new Function<Integer, Container[]>() {
-                @Override
-                public Container[] apply(Integer size) {
-                    Container[] ary = new Container[size];
-                    for (int i=0; i<ary.length; i++) {
-                        ary[i] = new Container(0,0,(short)0);
+            pool3 = new TuplePool<Container>(10, false,
+                    new Loader<Container>() {
+                        @Override
+                        public Container[] createArray(int size) throws Exception {
+                            Container[] ary = new Container[size];
+                            for (int i=0; i<ary.length; i++) {
+                                ary[i] = new Container(0,0,(short)0);
+                            }
+                            return ary;
+                        }
+                    },
+                    new Destroyer<Container>() {
+                        @Override
+                        public void destroyArray(Container[] ary) {
+
+                        }
                     }
-                    return ary;
-                }
-            });
+            );
 
             fieldA = Container.class.getDeclaredField("a");
             fieldB = Container.class.getDeclaredField("b");

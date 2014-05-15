@@ -2,9 +2,9 @@ package com.boundary.tuple;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 import java.util.ArrayDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by cliff on 5/4/14.
@@ -12,20 +12,32 @@ import java.util.ArrayDeque;
 public class TuplePool<T> {
     private final ThreadLocal<ArrayDeque<T>> pool;
     private final Optional<Function<T,Void>> initializer;
-    private final Function<Integer,T[]> loader;
+    private final Loader<T> loader;
+    private final Destroyer<T> destroyer;
+    private final CopyOnWriteArrayList<T[]> references;
     private int size;
     private final int reloadSize;
     private final boolean createWhenExhausted;
+    private volatile boolean closed = false;
 
-    public TuplePool(int size, boolean createWhenExhausted, Function<Integer,T[]> loader) {
-        this(size, createWhenExhausted, loader, null);
+    public TuplePool(int size,
+                     boolean createWhenExhausted,
+                     Loader<T> loader,
+                     Destroyer<T> destroyer) {
+        this(size, createWhenExhausted, loader, destroyer, null);
     }
 
-    public TuplePool(final int size, boolean createWhenExhausted, final Function<Integer,T[]> loader, Function<T,Void> initializer) {
+    public TuplePool(final int size,
+                     boolean createWhenExhausted,
+                     Loader<T> loader,
+                     Destroyer<T> destroyer,
+                     Function<T,Void> initializer) {
         this.size = 0;
         this.reloadSize = size;
         this.createWhenExhausted = createWhenExhausted;
-        this.loader = Preconditions.checkNotNull(loader);
+        references = new CopyOnWriteArrayList<>();
+        this.loader = loader;
+        this.destroyer = destroyer;
         this.initializer = Optional.fromNullable(initializer);
         this.pool = new ThreadLocal<ArrayDeque<T>>() {
             @Override
@@ -70,13 +82,25 @@ public class TuplePool<T> {
     }
 
     private void reload(ArrayDeque<T> deque) {
-        final T[] tuples = loader.apply(reloadSize);
-        if (tuples == null) {
+        if (closed) {
+            throw new IllegalStateException("Pool's closed everyone out!");
+        }
+        try {
+            final T[] tuples = loader.createArray(reloadSize);
+            size += reloadSize;
+            for (T tuple : tuples) {
+                deque.push(tuple);
+            }
+        } catch (Exception ex) {
             throw new IllegalStateException("Unable to reload Tuple pool");
         }
-        size += reloadSize;
-        for (T tuple : tuples) {
-            deque.push(tuple);
+    }
+
+    public void close() {
+        closed = true;
+        for (T[] ary : references) {
+            destroyer.destroyArray(ary);
         }
+        references.clear();
     }
 }

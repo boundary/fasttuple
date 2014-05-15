@@ -152,6 +152,18 @@ public class DirectTupleSchema extends TupleSchema {
         return tuples;
     }
 
+    @Override
+    public void destroyTuple(FastTuple tuple) {
+        long address = unsafe.getLong(tuple, addressOffset);
+        unsafe.freeMemory(address);
+    }
+
+    @Override
+    public void destroyTupleArray(FastTuple[] ary) {
+        long address = unsafe.getLong(ary[0], addressOffset);
+        unsafe.freeMemory(address);
+    }
+
     public void destroy(FastTuple tuple) {
         if (clazz.isInstance(tuple)) {
             long address = unsafe.getLong(tuple, addressOffset);

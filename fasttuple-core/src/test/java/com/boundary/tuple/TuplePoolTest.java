@@ -1,13 +1,12 @@
 package com.boundary.tuple;
 
-import com.google.common.base.Function;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by cliff on 5/12/14.
@@ -19,16 +18,24 @@ public class TuplePoolTest {
 
     @Test
     public void createPoolAndCheckoutTest() throws Exception {
-        TuplePool<Long> pool = new TuplePool<>(10, false, new Function<Integer, Long[]>() {
-            @Override
-            public Long[] apply(Integer integer) {
-                Long[] ary = new Long[integer];
-                for (int i=0; i<ary.length; i++) {
-                    ary[i] = 0L;
+        TuplePool<Long> pool = new TuplePool<>(10, false,
+                new Loader<Long>() {
+                    @Override
+                    public Long[] createArray(int size) throws Exception {
+                        Long[] ary = new Long[size];
+                        for (int i=0; i<ary.length; i++) {
+                            ary[i] = 0L;
+                        }
+                        return ary;
+                    }
+                },
+                new Destroyer<Long>() {
+                    @Override
+                    public void destroyArray(Long[] ary) {
+
+                    }
                 }
-                return ary;
-            }
-        });
+        );
 
         for (int i=0; i<10; i++) {
             Long n = pool.checkout();
@@ -40,16 +47,24 @@ public class TuplePoolTest {
 
     @Test
     public void expandPoolTest() throws Exception {
-        TuplePool<Long> pool = new TuplePool<>(10, true, new Function<Integer, Long[]>() {
-            @Override
-            public Long[] apply(Integer integer) {
-                Long[] ary = new Long[integer];
-                for (int i=0; i<ary.length; i++) {
-                    ary[i] = 0L;
+        TuplePool<Long> pool = new TuplePool<>(10, true,
+                new Loader<Long>() {
+                    @Override
+                    public Long[] createArray(int size) throws Exception {
+                        Long[] ary = new Long[size];
+                        for (int i=0; i<ary.length; i++) {
+                            ary[i] = 0L;
+                        }
+                        return ary;
+                    }
+                },
+                new Destroyer<Long>() {
+                    @Override
+                    public void destroyArray(Long[] ary) {
+
+                    }
                 }
-                return ary;
-            }
-        });
+        );
         for (int i=0; i<11; i++) {
             Long n = pool.checkout();
             assertEquals(new Long(0L), n);

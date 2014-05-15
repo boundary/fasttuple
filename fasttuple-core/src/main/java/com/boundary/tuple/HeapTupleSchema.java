@@ -47,4 +47,14 @@ public class HeapTupleSchema extends TupleSchema {
         }
         return tuples;
     }
+
+    @Override
+    public void destroyTuple(FastTuple tuple) {
+        //noop
+    }
+
+    @Override
+    public void destroyTupleArray(FastTuple[] ary) {
+        //noop
+    }
 }

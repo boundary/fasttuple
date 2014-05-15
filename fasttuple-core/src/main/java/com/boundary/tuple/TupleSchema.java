@@ -1,6 +1,5 @@
 package com.boundary.tuple;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -12,7 +11,7 @@ import java.util.List;
 /**
  * Created by cliff on 5/2/14.
  */
-public abstract class TupleSchema {
+public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTuple> {
     protected final String[] fieldNames;
     protected final Class[] fieldTypes;
     protected final Class iface;
@@ -36,16 +35,8 @@ public abstract class TupleSchema {
             Preconditions.checkArgument(iface.isInterface(),
                     iface.getName() +  " is not an interface");
         }
-        this.pool = new TuplePool<>(builder.poolSize, builder.createWhenExhausted, new Function<Integer, FastTuple[]>() {
-            @Override
-            public FastTuple[] apply(Integer integer) {
-                try {
-                    return createTupleArray(integer);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
+        this.pool = new TuplePool<>(builder.poolSize, builder.createWhenExhausted, this, this);
+
     }
 
     public static class Builder {
@@ -230,6 +221,30 @@ public abstract class TupleSchema {
      * @throws Exception
      */
     public abstract FastTuple[] createTupleArray(int size) throws Exception;
+
+    /**
+     * Deallocates memory for a tuple.
+     *
+     * @param tuple
+     */
+    public abstract void destroyTuple(FastTuple tuple);
+
+    /**
+     * Deallocates memory for an array of tuples.  Assumes that they were allocated as an array.
+     *
+     * @param ary
+     */
+    public abstract void destroyTupleArray(FastTuple[] ary);
+
+    @Override
+    public void destroyArray(FastTuple[] ary) {
+        destroyTupleArray(ary);
+    }
+
+    @Override
+    public FastTuple[] createArray(int size) throws Exception {
+        return createTupleArray(size);
+    }
 
     /**
      * Returns the tuple pool for this schema.  Each individual thread accessing this method
