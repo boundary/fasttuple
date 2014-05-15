@@ -23,6 +23,7 @@ import java.util.concurrent.BlockingQueue;
 @State(Scope.Benchmark)
 public class AccessMethodBenchmark {
     private DirectTupleSchema schema;
+    private static final Unsafe unsafe = Coterie.unsafe();
     private BlockingQueue<Container> containers;
     private PoolSettings<Container> poolSettings = new PoolSettings<Container>(
             new PoolableObjectBase<Container>() {
@@ -120,12 +121,22 @@ public class AccessMethodBenchmark {
     }
 
     @GenerateMicroBenchmark
+public long testOffheapAllocateAndSet() {
+    long record = unsafe.allocateMemory(8 + 4 + 2);
+    unsafe.putLong(record, 100);
+    unsafe.putInt(record+8, 200);
+    unsafe.putShort(record+12, (short)300);
+    long r = unsafe.getLong(record) + unsafe.getInt(record+8) + unsafe.getShort(record+12);
+    unsafe.freeMemory(record);
+    return r;
+}
+
+    @GenerateMicroBenchmark
     public long testOffheapDirectSet() {
-        Unsafe un = Coterie.unsafe();
-        un.putLong(record2 + 0L, 100);
-        un.putInt(record2 + 8L, 200);
-        un.putShort(record2 + 16L, (short)300);
-        return un.getLong(record2 + 0L) + un.getInt(record2 + 8L) + un.getShort(record2 + 16L);
+        unsafe.putLong(record2 + 0L, 100);
+        unsafe.putInt(record2 + 8L, 200);
+        unsafe.putShort(record2 + 12L, (short)300);
+        return unsafe.getLong(record2 + 0L) + unsafe.getInt(record2 + 8L) + unsafe.getShort(record2 + 12L);
     }
 
     @GenerateMicroBenchmark

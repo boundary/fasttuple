@@ -194,7 +194,7 @@ public class FastTupleBenchmarks {
         }
 
         @GenerateMicroBenchmark
-        public long measureDirectSchemaPoolStatic(DirectSchema ds) throws Exception {
+        public long measureDirectSchemaPoolIface(DirectSchema ds) throws Exception {
             StaticBinding tuple = (StaticBinding)ds.schema.pool().checkout();
 
             tuple.a(100L);
@@ -207,7 +207,7 @@ public class FastTupleBenchmarks {
         }
 
         @GenerateMicroBenchmark
-        public long measureDirectSchemaPreallocStatic(DirectSchema ds) throws Exception {
+        public long measureDirectSchemaPreallocIface(DirectSchema ds) throws Exception {
             StaticBinding tuple = (StaticBinding)ds.tuple;
 
             tuple.a(100L);
@@ -314,7 +314,7 @@ public class FastTupleBenchmarks {
         }
 
         @GenerateMicroBenchmark
-        public long measureHeapSchemaPoolStatic(HeapSchema hs) throws Exception {
+        public long measureHeapSchemaPoolIface(HeapSchema hs) throws Exception {
             StaticBinding tuple = (StaticBinding)hs.schema.pool().checkout();
 
             tuple.a(100L);
@@ -327,7 +327,7 @@ public class FastTupleBenchmarks {
         }
 
         @GenerateMicroBenchmark
-        public long measureHeapSchemaPreallocStatic(HeapSchema hs) throws Exception {
+        public long measureHeapSchemaPreallocIface(HeapSchema hs) throws Exception {
             StaticBinding tuple = (StaticBinding)hs.tuple;
 
             tuple.a(100L);
