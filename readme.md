@@ -8,6 +8,18 @@ We wrote FastTuple to try and help solve this problem.  FastTuple generates hete
 
 FastTuple pulls off its trick via runtime bytecode generation.  The user supplies it with a schema of field names and types.  That schema is then built into a Java class definition which will contain accessor methods and either field definitions or the memory address for an off heap allocation, depending on which storage method was requested.  The resulting Java class gets compiled into bytecode and then loaded as a reflective Class object.  This Class object can then be used to create instances of the new class.
 
+## Building
+
+This package depends on Janino 2.7.4, which is not currently getting pushed to maven central.  As soon as that happens (we have a ticket in with the maintainer) we will begin pushing FastTuple to maven central as well.  In the meantime you can build FastTuple like so:
+
+```bash
+wget http://janino.net/download/janino-2.7.4.zip
+unzip janino-2.7.4.zip
+mvn install:install-file -Dfile=janino-2.7.4/janino.jar -Dsources=janino-2.7.4/janino-src.zip -DgroupId=org.codehaus.janino -DartifactId=janino -Dversion=2.7.4 -Dpackaging=jar
+mvn install:install-file -Dfile=janino-2.7.4/commons-compiler.jar -Dsources=janino-2.7.4/commons-compiler-src.zip -DgroupId=org.codehaus.janino -DartifactId=commons-compiler -Dversion=2.7.4 -Dpackaging=jar
+mvn install
+```
+
 ## Usage
 
 Interaction with FastTuple primarily takes place via the TupleSchema class.  Each instance of TupleSchema describes a separate type of FastTuple both from the perspective of the FastTuple library and the JVM.  At this time, allowable field types are the primitive classes for: long, int, short, char, byte, float, double.  Support for String is planned for a later release.  Some examples:
@@ -96,3 +108,52 @@ Each schema will allocate a tuple pool per accessing thread if a poolSize is set
 
 ## Performance
 
+One of the main goals of this library is performance.  Toward that end it has a full suite of microbenchmarks to test the various supported means of accessing and manipulating tuples for both tuning the library and showing the tradeoffs in overhead for things like pooling and allocating tuples on demand.  Here's what a full run looks like on a late 2013 macbook pro 2.6ghz with Java 8 1.8.0_05-b13.
+
+```
+Benchmark                                                                              Mode   Samples         Mean   Mean error    Units
+c.b.t.AccessMethodBenchmark.testAllocateSetAndDeallocate                              thrpt        20     7069.954      181.689   ops/ms
+c.b.t.AccessMethodBenchmark.testClass                                                 thrpt        20  1628847.332    21756.564   ops/ms
+c.b.t.AccessMethodBenchmark.testFastPool                                              thrpt        20    30715.791      570.086   ops/ms
+c.b.t.AccessMethodBenchmark.testFastTuplePreAllocIndexed                              thrpt        20   160173.234     2498.380   ops/ms
+c.b.t.AccessMethodBenchmark.testFastTuplePreAllocIndexedBoxing                        thrpt        20    59117.984      630.813   ops/ms
+c.b.t.AccessMethodBenchmark.testFastTupleStaticBinding                                thrpt        20   157928.877     2411.094   ops/ms
+c.b.t.AccessMethodBenchmark.testInvokeDynamic                                         thrpt        20    26085.594     1158.292   ops/ms
+c.b.t.AccessMethodBenchmark.testLongArray                                             thrpt        20  1721846.666    23422.990   ops/ms
+c.b.t.AccessMethodBenchmark.testOffheapAllocateAndSet                                 thrpt        20     7512.737      167.141   ops/ms
+c.b.t.AccessMethodBenchmark.testOffheapDirectSet                                      thrpt        20   898743.426    37659.166   ops/ms
+c.b.t.AccessMethodBenchmark.testOffheapSchemaSet                                      thrpt        20   367841.110     4282.620   ops/ms
+c.b.t.AccessMethodBenchmark.testPooledObject                                          thrpt        20    12572.464      155.458   ops/ms
+c.b.t.AccessMethodBenchmark.testQueuedObject                                          thrpt        20    25092.751      242.771   ops/ms
+c.b.t.AccessMethodBenchmark.testReflectField                                          thrpt        20    28850.478      275.462   ops/ms
+c.b.t.AccessMethodBenchmark.testStormTuple                                            thrpt        20    79693.517      888.956   ops/ms
+c.b.t.AccessMethodBenchmark.testTuplePool                                             thrpt        20    70790.084      950.775   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaAllocate                thrpt        20     7214.300       98.387   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaDeque                   thrpt        20   153937.210     2534.986   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPoolEval                thrpt        20    53563.512      836.586   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPoolIface               thrpt        20    57669.480      716.962   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPoolIndexed             thrpt        20    57633.447     1025.338   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPoolIndexedBoxed        thrpt        20    38984.939      823.182   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPreallocEval            thrpt        20   332142.591     6426.566   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPreallocIface           thrpt        20   370593.271     5369.162   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPreallocIndexed         thrpt        20   377811.881     7077.471   ops/ms
+c.b.t.FastTupleBenchmarks.DirectBenchmarks.measureDirectSchemaPreallocIndexedBoxed    thrpt        20   115699.056     2402.657   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaAllocate                    thrpt        20   990788.476    12295.764   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaDeque                       thrpt        20   173527.417     3619.733   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPoolEval                    thrpt        20    59377.121     1071.014   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPoolIface                   thrpt        20    62391.209      765.821   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPoolIndexed                 thrpt        20    62120.412     1105.981   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPoolIndexedBoxed            thrpt        20    42187.554      737.124   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPreallocEval                thrpt        20   397337.746     5274.807   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPreallocEvalField           thrpt        20   579136.768     8818.827   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPreallocIface               thrpt        20   554449.236     6740.073   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPreallocIndexed             thrpt        20   536258.735    10417.522   ops/ms
+c.b.t.FastTupleBenchmarks.HeapBenchmarks.measureHeapSchemaPreallocIndexedBoxed        thrpt        20   202220.576     3806.694   ops/ms
+```
+
+To run the benchmarks:
+
+```
+mvn package
+java -jar fasttuple-bench/target/microbenchmarks.jar
+```
