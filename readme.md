@@ -20,6 +20,10 @@ mvn install:install-file -Dfile=janino-2.7.4/commons-compiler.jar -Dsources=jani
 mvn install
 ```
 
+## Note on GPG
+
+You'll also need to ensure that you have GPG available on the command line. Mac OS X and Windows users may need to install via (https://gpgtools.org/) or cygwin respectively.
+
 ## Usage
 
 Interaction with FastTuple primarily takes place via the TupleSchema class.  Each instance of TupleSchema describes a separate type of FastTuple both from the perspective of the FastTuple library and the JVM.  At this time, allowable field types are the primitive classes for: long, int, short, char, byte, float, double.  Support for String is planned for a later release.  Some examples:
