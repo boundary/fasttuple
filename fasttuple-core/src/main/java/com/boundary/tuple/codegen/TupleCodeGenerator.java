@@ -100,6 +100,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                  loc,
                  null,
                  new Java.Modifiers(Mod.PUBLIC),
+                 null,
                  classToType(loc, Object.class),
                  "get",
                  new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
@@ -118,10 +119,11 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
-                new Java.BasicType(loc, primIndex(types[i])),
+                null,
+                new Java.PrimitiveType(loc, primIndex(types[i])),
                 "get" + capitalize(types[i].getName()),
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
-                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index")}, false),
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.PrimitiveType(loc, Java.Primitive.INT), "index")}, false),
                 new Java.Type[] {},
                 Lists.<Java.BlockStatement>newArrayList(
                         new Java.SwitchStatement(loc, new Java.AmbiguousName(loc, new String[] {"index"}), generateIndexedGetterImpl(types[i]))
@@ -138,11 +140,12 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
-                new Java.BasicType(loc, Java.BasicType.VOID),
+                null,
+                new Java.PrimitiveType(loc, Java.Primitive.VOID),
                 "set" + capitalize(types[i].getName()),
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
-                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, Java.BasicType.INT), "index"),
-                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.BasicType(loc, primIndex(types[i])), "value")
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.PrimitiveType(loc, Java.Primitive.INT), "index"),
+                        new Java.FunctionDeclarator.FormalParameter(loc, true, new Java.PrimitiveType(loc, primIndex(types[i])), "value")
                 }, false),
                 new Java.Type[] {},
                 Lists.<Java.BlockStatement>newArrayList(
@@ -158,6 +161,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
+                null,
                 classToType(loc, Void.TYPE),
                 "set",
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
@@ -183,6 +187,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
+                null,
                 classToType(loc, type),
                 name,
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {}, false),
@@ -197,6 +202,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
+                null,
                 classToType(loc, Void.TYPE),
                 name,
                 new Java.FunctionDeclarator.FormalParameters(loc, new Java.FunctionDeclarator.FormalParameter[] {
@@ -215,15 +221,15 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
     }
 
 
-    protected int primIndex(Class type) {
-        if (type.equals(Long.TYPE)) return Java.BasicType.LONG;
-        if (type.equals(Integer.TYPE)) return Java.BasicType.INT;
-        if (type.equals(Short.TYPE)) return Java.BasicType.SHORT;
-        if (type.equals(Character.TYPE)) return Java.BasicType.CHAR;
-        if (type.equals(Byte.TYPE)) return Java.BasicType.BYTE;
-        if (type.equals(Float.TYPE)) return Java.BasicType.FLOAT;
-        if (type.equals(Double.TYPE)) return Java.BasicType.DOUBLE;
-        return 0;
+    protected Java.Primitive primIndex(Class type) {
+        if (type.equals(Long.TYPE)) return Java.Primitive.LONG;
+        if (type.equals(Integer.TYPE)) return Java.Primitive.INT;
+        if (type.equals(Short.TYPE)) return Java.Primitive.SHORT;
+        if (type.equals(Character.TYPE)) return Java.Primitive.CHAR;
+        if (type.equals(Byte.TYPE)) return Java.Primitive.BYTE;
+        if (type.equals(Float.TYPE)) return Java.Primitive.FLOAT;
+        if (type.equals(Double.TYPE)) return Java.Primitive.DOUBLE;
+        return Java.Primitive.VOID;
     }
 
     protected String primToBox(Class type) {

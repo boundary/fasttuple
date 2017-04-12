@@ -25,7 +25,7 @@ public class DirectTupleCodeGenerator extends TupleCodeGenerator {
                         loc,
                         null,
                         new Java.Modifiers(Mod.PUBLIC),
-                        new Java.BasicType(loc, Java.BasicType.LONG),
+                        new Java.PrimitiveType(loc, Java.Primitive.LONG),
                         new Java.VariableDeclarator[] {new Java.VariableDeclarator(loc, "address", 0, null)}),
                 new Java.FieldDeclaration(loc,
                         null,

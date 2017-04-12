@@ -52,6 +52,7 @@ public class TupleAllocatorGenerator extends ClassBodyEvaluator {
                 loc,
                 null,
                 new Java.Modifiers(Mod.PUBLIC),
+                null,
                 classToType(loc, FastTuple.class),
                 "allocate",
                 emptyParams(loc),
