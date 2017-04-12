@@ -52,6 +52,10 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
         public byte evaluate(FastTuple tuple);
     }
 
+    public static interface BooleanTupleExpression {
+        public boolean evaluate(FastTuple tuple);
+    }
+
     private static String packageName = "com.boundary.tuple";
     private static AtomicLong counter = new AtomicLong(0);
     private String expression;
@@ -115,6 +119,10 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
 
         public DoubleTupleExpression returnDouble() throws Exception {
             return (DoubleTupleExpression) new TupleExpressionGenerator(schema, expression, DoubleTupleExpression.class, Double.TYPE).evaluator();
+        }
+
+        public BooleanTupleExpression returnBoolean() throws Exception {
+            return (BooleanTupleExpression) new TupleExpressionGenerator(schema, expression, BooleanTupleExpression.class, Boolean.TYPE).evaluator();
         }
 
     }

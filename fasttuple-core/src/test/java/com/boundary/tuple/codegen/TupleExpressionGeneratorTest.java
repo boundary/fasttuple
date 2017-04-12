@@ -30,6 +30,24 @@ public class TupleExpressionGeneratorTest {
     }
 
     @Test
+    public void testGetBooleanOut() throws Exception {
+        TupleSchema schema = TupleSchema.builder().
+                addField("a", Long.TYPE).
+                addField("b", Long.TYPE).
+                addField("c", Long.TYPE).
+                heapMemory().
+                build();
+
+        FastTuple tuple = schema.createTuple();
+        tuple.setLong(1, 100L);
+        tuple.setLong(2, 600L);
+        tuple.setLong(3, 1000L);
+
+        TupleExpressionGenerator.BooleanTupleExpression eval = TupleExpressionGenerator.builder().expression("tuple.a == 100L").schema(schema).returnBoolean();
+        assertTrue(eval.evaluate(tuple));
+    }
+
+    @Test
     public void testMultiExpr() throws Exception {
         TupleSchema schema = TupleSchema.builder().
                 addField("a", Long.TYPE).
