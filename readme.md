@@ -1,5 +1,8 @@
 # FastTuple
 
+This repository is [forked from](https://github.com/boundary/fasttuple), all credit to Cliff Moon and his team, it's a fantastic piece of work.
+I've made a few changes and pushed everything up to Maven. Enjoy!  
+
 ## Introduction
 
 There are lots of good things about working on the JVM, like a world class JIT, operating system threads, and a world class garbage collector.  However, one limiting factor can often be the interaction between primitive types and referenced types in Java.  Primitive types are the built in types that represent integral numbers, floating point numbers, and boolean yes/no values.  Primitives are also quite fast and memory efficient: they get allocated either on the stack if they're being used in a method, or inlined in an object when they're declared as field members.  And they wind up being fast because the JIT can often optimize their access down to a single CPU instruction.  This works really well when you know what types a class will hold as its state beforehand.  If, on the other hand, you don't know what an object or array will hold at compile time the JVM forces you to box primitives.  Boxing means that the primitives get wrapped in a heap allocated object, and their container will hold a reference to them.  That type of overhead winds up being inefficient both in access time and memory space.  Access time suffers because this type of layout breaks locality of reference, which is the principle that memory frequently accessed together should be stored adjacently.  All modern memory hierarchies optimize for locality of reference in their caching implementations.  The extra allocations and garbage generated also put pressure on the JVM's garbage collector, which can often be a cause of long pause times.
@@ -7,18 +10,6 @@ There are lots of good things about working on the JVM, like a world class JIT, 
 We wrote FastTuple to try and help solve this problem.  FastTuple generates heterogeneous collections of primitive values and ensures as best it can that they will be laid out adjacently in memory.  The individual values in the tuple can either be accessed from a statically bound interface, via an indexed accessor, or via reflective or other dynamic invocation techniques.  FastTuple is designed to deal with a large number of tuples therefore it will also attempt to pool tuples such that they do not add significantly to the GC load of a system.  FastTuple is also capable of allocating the tuple value storage entirely off-heap, using Java's direct memory capabilities.
 
 FastTuple pulls off its trick via runtime bytecode generation.  The user supplies it with a schema of field names and types.  That schema is then built into a Java class definition which will contain accessor methods and either field definitions or the memory address for an off heap allocation, depending on which storage method was requested.  The resulting Java class gets compiled into bytecode and then loaded as a reflective Class object.  This Class object can then be used to create instances of the new class.
-
-## Building
-
-This package depends on Janino 2.7.4, which is not currently getting pushed to maven central.  As soon as that happens (we have a ticket in with the maintainer) we will begin pushing FastTuple to maven central as well.  In the meantime you can build FastTuple like so:
-
-```bash
-wget http://janino.net/download/janino-2.7.4.zip
-unzip janino-2.7.4.zip
-mvn install:install-file -Dfile=janino-2.7.4/janino.jar -Dsources=janino-2.7.4/janino-src.zip -DgroupId=org.codehaus.janino -DartifactId=janino -Dversion=2.7.4 -Dpackaging=jar
-mvn install:install-file -Dfile=janino-2.7.4/commons-compiler.jar -Dsources=janino-2.7.4/commons-compiler-src.zip -DgroupId=org.codehaus.janino -DartifactId=commons-compiler -Dversion=2.7.4 -Dpackaging=jar
-mvn install
-```
 
 ## Note on GPG
 

@@ -14,6 +14,31 @@
     <module>fasttuple-core</module>
     <module>fasttuple-bench</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>
@@ -34,17 +59,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.7.0</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>2.10.4</version>
         <executions>
           <execution>
             <id>attach-javadoc</id>
@@ -55,30 +80,20 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
   <scm>
-    <connection>scm:git:git@github.com:boundary/fasttuple.git</connection>
-    <developerConnection>scm:git:git@github.com:boundary/fasttuple.git</developerConnection>
-    <url>git@github.com:boundary/fasttuple.git</url>
+    <connection>scm:git:git@github.com:nickrobison/fasttuple.git</connection>
+    <developerConnection>scm:git:git@github.com:nickrobison/fasttuple.git</developerConnection>
+    <url>git@github.com:nickrobison/fasttuple.git</url>
   </scm>
 
   <developers>
+    <developer>
+      <name>Nick Robison</name>
+      <email>nick@nickrobison.com</email>
+    </developer>
     <developer>
       <name>Cliff Moon</name>
       <email>cliff@boundary.com</email>
@@ -95,5 +110,13 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray-nickrobison-maven</id>
+      <name>nickrobison-maven</name>
+      <url>https://api.bintray.com/maven/nickrobison/maven/fasttuple/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
