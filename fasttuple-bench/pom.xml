@@ -29,12 +29,12 @@ questions.
     <parent>
         <artifactId>fasttuple</artifactId>
         <groupId>com.nickrobison</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
     </parent>
 
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-bench</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>Auto-generated JMH benchmark</name>

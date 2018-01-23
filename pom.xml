@@ -4,7 +4,7 @@
   <groupId>com.nickrobison</groupId>
   <artifactId>fasttuple</artifactId>
   <packaging>pom</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
 
   <name>FastTuple</name>
   <description>FastTuple is a library for generating heterogeneous tuples of primitive types from a runtime defined schema without boxing.</description>
@@ -115,7 +115,7 @@
     <repository>
       <id>bintray-nickrobison-maven</id>
       <name>nickrobison-maven</name>
-      <url>https://api.bintray.com/maven/nickrobison/maven/fasttuple/</url>
+      <url>https://api.bintray.com/maven/nickrobison/maven/fasttuple-core/</url>
     </repository>
   </distributionManagement>
 

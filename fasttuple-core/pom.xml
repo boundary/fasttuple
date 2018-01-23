@@ -6,12 +6,12 @@
     <parent>
         <artifactId>fasttuple</artifactId>
         <groupId>com.nickrobison</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1</version>
     </parent>
 
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-core</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
 
     <dependencies>
         <dependency>
@@ -62,5 +62,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
