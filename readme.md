@@ -1,6 +1,6 @@
 # FastTuple
 
-This repository is [forked from](https://github.com/boundary/fasttuple), all credit to Cliff Moon and his team, it's a fantastic piece of work.
+This repository is forked from [here](https://github.com/boundary/fasttuple), all credit to Cliff Moon and his team, it's a fantastic piece of work.
 I've made a few changes and pushed everything up to Maven. Enjoy!  
 
 ## Introduction
