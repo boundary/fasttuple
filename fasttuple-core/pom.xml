@@ -6,24 +6,24 @@
     <parent>
         <artifactId>fasttuple</artifactId>
         <groupId>com.nickrobison</groupId>
-        <version>0.1</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-core</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.0.7</version>
+            <version>3.0.8</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>commons-compiler</artifactId>
-            <version>3.0.7</version>
+            <version>3.0.8</version>
         </dependency>
 
         <dependency>
