@@ -5,7 +5,7 @@
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple</artifactId>
     <packaging>pom</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2.0</version>
 
     <name>FastTuple</name>
     <description>FastTuple is a library for generating heterogeneous tuples of primitive types from a runtime defined
