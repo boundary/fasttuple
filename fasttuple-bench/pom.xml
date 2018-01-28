@@ -32,7 +32,6 @@ questions.
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-bench</artifactId>
     <version>0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
