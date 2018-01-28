@@ -6,7 +6,7 @@ import com.nickrobison.tuple.unsafe.Coterie;
 import sun.misc.Unsafe;
 
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Objects;
 
 import static com.nickrobison.tuple.SizeOf.sizeOf;
 
@@ -36,8 +36,8 @@ public class DirectTupleSchema extends TupleSchema {
          * This is useful for eliminating false sharing when adjacent records are being utilized by different
          * threads.
          *
-         * @param wordSize
-         * @return
+         * @param wordSize - Word size to pad between tuples
+         * @return - {@link Builder}
          */
         public Builder padToWordSize(int wordSize) {
             this.wordSize = wordSize;
@@ -123,7 +123,7 @@ public class DirectTupleSchema extends TupleSchema {
         return byteSize;
     }
 
-    public FastTuple createTuple(long address) throws Exception {
+    public FastTuple createTuple(long address) {
         FastTuple tuple = allocator.allocate();
         unsafe.putLong(tuple, addressOffset, address);
         return tuple;
@@ -146,7 +146,7 @@ public class DirectTupleSchema extends TupleSchema {
     public FastTuple[] createTupleArray(int size) throws Exception {
         long address = createRecordArray(size);
         FastTuple[] tuples = new FastTuple[size];
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             tuples[i] = createTuple(address + byteSize * i);
         }
         return tuples;
@@ -189,12 +189,7 @@ public class DirectTupleSchema extends TupleSchema {
         for (int i = 0; i < members.length; i++) {
             members[i] = new Member(i, sizeOf(fieldTypes[i]));
         }
-        Arrays.sort(members, new Comparator<Member>() {
-            @Override
-            public int compare(Member o1, Member o2) {
-                return o2.size - o1.size;
-            }
-        });
+        Arrays.sort(members, (o1, o2) -> o2.size - o1.size);
         int offset = 0;
         for (Member m : members) {
             layout[m.index] = offset;
@@ -203,6 +198,29 @@ public class DirectTupleSchema extends TupleSchema {
         }
         int padding = wordSize - (offset % wordSize);
         byteSize = offset + padding;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DirectTupleSchema that = (DirectTupleSchema) o;
+        return byteSize == that.byteSize &&
+                addressOffset == that.addressOffset &&
+                wordSize == that.wordSize &&
+                Arrays.equals(layout, that.layout) &&
+                Arrays.equals(widths, that.widths) &&
+                Objects.equals(allocator, that.allocator);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = Objects.hash(super.hashCode(), byteSize, addressOffset, wordSize, allocator);
+        result = 31 * result + Arrays.hashCode(layout);
+        result = 31 * result + Arrays.hashCode(widths);
+        return result;
     }
 
     private static class Member {

@@ -69,9 +69,9 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
          * in the generated class, therefore they have the same restrictions on allowable characters.  Passing
          * in an illegal name will cause a CompileException during the call to build.
          *
-         * @param fieldName
-         * @param fieldType
-         * @return
+         * @param fieldName - Name of field
+         * @param fieldType - {@link Class} type of field
+         * @return - {@link Builder}
          */
         public Builder addField(String fieldName, Class fieldType) {
             fn.add(fieldName);
@@ -83,8 +83,8 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
          * The generated FastTuple subclass will implement the passed in interface.  FastTuple's produced
          * from this schema can then be cast to the interface type, for type safe invocation of the desired methods.
          *
-         * @param iface
-         * @return
+         * @param iface - {@link Class} interface to implement
+         * @return - {@link Builder}
          */
         public Builder implementInterface(Class iface) {
             this.iface = iface;
@@ -120,8 +120,8 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
          * of tuples that will be allocated can be found by multiplying this number
          * by the number of threads that will be checking tuples out of the pool.
          *
-         * @param poolSize The size to generate specified in number of tuples.
-         * @return
+         * @param poolSize - The size to generate specified in number of tuples.
+         * @return - {@link Builder}
          */
         public Builder poolOfSize(int poolSize) {
             this.poolSize = poolSize;
@@ -132,7 +132,7 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
          * Specifies that the tuple pool should allocate more tuples when it becomes
          * exhausted.  Otherwise, an exhausted pool will throw an IllegalStateException.
          *
-         * @return
+         * @return - {@link Builder}
          */
         public Builder expandingPool() {
             this.createWhenExhausted = true;
@@ -142,7 +142,7 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
         /**
          * Causes this schema to allocate its memory off of the main java heap.
          *
-         * @return
+         * @return - {@link  Builder}
          */
         public DirectTupleSchema.Builder directMemory() {
             return new DirectTupleSchema.Builder(this);
@@ -151,7 +151,7 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
         /**
          * Causes this schema to allocate its memory on heap, and fully reachable by GC.
          *
-         * @return
+         * @return - {@link Builder}
          */
         public HeapTupleSchema.Builder heapMemory() {
             return new HeapTupleSchema.Builder(this);
@@ -207,8 +207,8 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
     /**
      * Allocates a new tuple, completely separate from any pooling.
      *
-     * @return
-     * @throws Exception
+     * @return - {@link FastTuple}
+     * @throws Exception - Throws an exception if unable to allocate tuple
      */
     public abstract FastTuple createTuple() throws Exception;
 
@@ -217,22 +217,22 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
      * in adjacent memory, however with the heap based allocation this is not guaranteed.
      *
      * @param size the number of tuples in the array.
-     * @return
-     * @throws Exception
+     * @return - Array of {@link FastTuple}
+     * @throws Exception - Throws is unable to allocate tuple array
      */
     public abstract FastTuple[] createTupleArray(int size) throws Exception;
 
     /**
      * Deallocates memory for a tuple.
      *
-     * @param tuple
+     * @param tuple - {@link FastTuple} to deallocate
      */
     public abstract void destroyTuple(FastTuple tuple);
 
     /**
      * Deallocates memory for an array of tuples.  Assumes that they were allocated as an array.
      *
-     * @param ary
+     * @param ary - Array of {@link FastTuple} to deallocate
      */
     public abstract void destroyTupleArray(FastTuple[] ary);
 
@@ -250,7 +250,7 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
      * Returns the tuple pool for this schema.  Each individual thread accessing this method
      * will see a different pool.
      *
-     * @return
+     * @return - {@link TuplePool} of {@link FastTuple}
      */
     public TuplePool<FastTuple> pool() {
         return pool;
