@@ -5,7 +5,7 @@ import nf.fr.eraasoft.pool.ObjectPool;
 import nf.fr.eraasoft.pool.PoolException;
 import nf.fr.eraasoft.pool.PoolSettings;
 import nf.fr.eraasoft.pool.PoolableObjectBase;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import other.FastObjectPool;
@@ -107,7 +107,7 @@ public class AccessMethodBenchmark {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testAllocateSetAndDeallocate() {
         long record = schema.createRecord();
         schema.setLong(record, 0, 100);
@@ -119,7 +119,7 @@ public class AccessMethodBenchmark {
         return r;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testOffheapSchemaSet() {
         schema.setLong(record2, 0, 100);
         schema.setInt(record2, 1, 200);
@@ -127,7 +127,7 @@ public class AccessMethodBenchmark {
         return schema.getLong(record2, 0) + schema.getInt(record2, 1) + schema.getShort(record2, 2);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
 public long testOffheapAllocateAndSet() {
     long record = unsafe.allocateMemory(8 + 4 + 2);
     unsafe.putLong(record, 100);
@@ -138,7 +138,7 @@ public long testOffheapAllocateAndSet() {
     return r;
 }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testOffheapDirectSet() {
         unsafe.putLong(record2 + 0L, 100);
         unsafe.putInt(record2 + 8L, 200);
@@ -146,7 +146,7 @@ public long testOffheapAllocateAndSet() {
         return unsafe.getLong(record2 + 0L) + unsafe.getInt(record2 + 8L) + unsafe.getShort(record2 + 12L);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testInvokeDynamic() throws Throwable {
         Container container = new Container(0,0,(short)0);
         mhsa.dynamicInvoker().invoke(container, 100L);
@@ -155,7 +155,7 @@ public long testOffheapAllocateAndSet() {
         return (Long)mhga.dynamicInvoker().invoke(container) + (Integer)mhgb.dynamicInvoker().invoke(container) + (Short)mhgc.dynamicInvoker().invoke(container);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testStormTuple() {
         List<Long> list = new ArrayList<Long>();
         list.add(100L);
@@ -164,7 +164,7 @@ public long testOffheapAllocateAndSet() {
         return list.get(0) + list.get(1) + list.get(2);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testLongArray() {
         long[] longs = new long[3];
         longs[0] = 100L;
@@ -173,7 +173,7 @@ public long testOffheapAllocateAndSet() {
         return longs[0] + longs[1] + longs[2];
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testClass() {
         Container container = new Container(0, 0, (short)0);
         container.a = 100;
@@ -182,7 +182,7 @@ public long testOffheapAllocateAndSet() {
         return container.a + container.b + container.c;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testReflectField() throws Exception {
         Container container = new Container(0, 0, (short)0);
         fieldA.setLong(container, 100);
@@ -191,7 +191,7 @@ public long testOffheapAllocateAndSet() {
         return fieldA.getLong(container) + fieldB.getInt(container) + fieldC.getShort(container);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testQueuedObject() throws InterruptedException {
         Container container = containers.take();
         container.a = 100;
@@ -202,7 +202,7 @@ public long testOffheapAllocateAndSet() {
         return r;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testPooledObject() throws Exception {
         Container container = pool.getObj();
         container.a = 100;
@@ -213,7 +213,7 @@ public long testOffheapAllocateAndSet() {
         return l;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testFastPool() throws Exception {
         FastObjectPool.Holder<Container> holder = pool2.take();
         Container container = holder.getValue();
@@ -225,7 +225,7 @@ public long testOffheapAllocateAndSet() {
         return r;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testTuplePool() throws Exception {
         Container container = pool3.checkout();
         container.a = 100;
@@ -236,7 +236,7 @@ public long testOffheapAllocateAndSet() {
         return r;
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testFastTuplePreAllocIndexedBoxing() throws Exception {
         FastTuple tuple = schema.createTuple(record2);
         tuple.set(1, 100L);
@@ -245,7 +245,7 @@ public long testOffheapAllocateAndSet() {
         return (Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testFastTuplePreAllocIndexed() throws Exception {
         FastTuple tuple = schema.createTuple(record2);
         tuple.setLong(1, 100L);
@@ -254,7 +254,7 @@ public long testOffheapAllocateAndSet() {
         return tuple.getLong(1) + tuple.getInt(2) + tuple.getShort(3);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public long testFastTupleStaticBinding() throws Exception {
         StaticBinding tuple = (StaticBinding)schema.createTuple(record2);
         tuple.a(100L);

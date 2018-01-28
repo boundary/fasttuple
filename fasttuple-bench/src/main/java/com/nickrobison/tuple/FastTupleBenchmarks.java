@@ -1,7 +1,7 @@
 package com.nickrobison.tuple;
 
 import com.nickrobison.tuple.codegen.TupleExpressionGenerator;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -106,7 +106,7 @@ public class FastTupleBenchmarks {
     }
 
     public static class DirectBenchmarks {
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaAllocate(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.schema.createTuple();
             long r = tuple.getLong(1);
@@ -114,7 +114,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaDeque(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.deque.pop();
 
@@ -127,7 +127,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPoolIndexedBoxed(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.schema.pool().checkout();
 
@@ -140,7 +140,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPreallocIndexedBoxed(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.tuple;
 
@@ -151,7 +151,7 @@ public class FastTupleBenchmarks {
             return (Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPoolIndexed(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.schema.pool().checkout();
 
@@ -164,7 +164,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPreallocIndexed(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.tuple;
 
@@ -175,7 +175,7 @@ public class FastTupleBenchmarks {
             return tuple.getLong(1) + tuple.getInt(2) + tuple.getShort(3);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPoolEval(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.schema.pool().checkout();
 
@@ -185,7 +185,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPreallocEval(DirectSchema ds) throws Exception {
             FastTuple tuple = ds.tuple;
 
@@ -193,7 +193,7 @@ public class FastTupleBenchmarks {
             return ds.eval2.evaluate(tuple);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPoolIface(DirectSchema ds) throws Exception {
             StaticBinding tuple = (StaticBinding)ds.schema.pool().checkout();
 
@@ -206,7 +206,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureDirectSchemaPreallocIface(DirectSchema ds) throws Exception {
             StaticBinding tuple = (StaticBinding)ds.tuple;
 
@@ -219,14 +219,14 @@ public class FastTupleBenchmarks {
     }
 
     public static class HeapBenchmarks {
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaAllocate(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.schema.createTuple();
 
             return tuple.getLong(1);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaDeque(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.deque.pop();
 
@@ -239,7 +239,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPoolIndexedBoxed(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.schema.pool().checkout();
 
@@ -252,7 +252,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPreallocIndexedBoxed(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.tuple;
 
@@ -263,7 +263,7 @@ public class FastTupleBenchmarks {
             return (Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPoolIndexed(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.schema.pool().checkout();
 
@@ -276,7 +276,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPreallocIndexed(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.tuple;
 
@@ -287,7 +287,7 @@ public class FastTupleBenchmarks {
             return tuple.getLong(1) + tuple.getInt(2) + tuple.getShort(3);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPoolEval(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.schema.pool().checkout();
 
@@ -297,7 +297,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPreallocEval(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.tuple;
 
@@ -305,7 +305,7 @@ public class FastTupleBenchmarks {
             return hs.eval2.evaluate(tuple);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPreallocEvalField(HeapSchema hs) throws Exception {
             FastTuple tuple = hs.tuple;
 
@@ -313,7 +313,7 @@ public class FastTupleBenchmarks {
             return hs.eval4.evaluate(tuple);
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPoolIface(HeapSchema hs) throws Exception {
             StaticBinding tuple = (StaticBinding)hs.schema.pool().checkout();
 
@@ -326,7 +326,7 @@ public class FastTupleBenchmarks {
             return r;
         }
 
-        @GenerateMicroBenchmark
+        @Benchmark
         public long measureHeapSchemaPreallocIface(HeapSchema hs) throws Exception {
             StaticBinding tuple = (StaticBinding)hs.tuple;
 
