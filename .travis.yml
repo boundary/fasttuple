@@ -1,20 +1,16 @@
 language: java
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 sudo: false
 install: true
-
 addons:
   sonarcloud:
     organization: nickrobison-github
     token:
-      secure: "VGoGGAzSbztXz3frL7Ey2igEX6Vir9zVUarULma8OxSAN5JzABa6FChqsrv3hwCkWIu56h/dt0zhlk0wWwyV4JDoxsxQ7x5u5JDEzbfg+8ajVVUZZJRT8RwXDze48p79AsmOWpD98Te9iWkJg983KIbBh4pTupA3qAXQ/umMfOlK+qCnB9NKWKdLXOs7BbONv/DhC1pY2lBqwU4uvFJhObCCqWNL3GIIfv+WJkEqOuWFs7AbwRnpCl1Tf39VWvSf9xWBRelC4hFhhM9V0KNtmfxQtQUEpSaz6xxXVjs53j96Ir+NXOd/baqVJwd2xtjXK/uOivnMHc25Y5dwesfnM0gPgdDqKkdyhAjsLFJDfkHC9q//klh3Qn2CLJPbpXwhasrswej8QaE4B63plHwGD/XybJ0kNeZ5ibt7mAd00VELCGbJZzusFdVxMfkZbs1i6krujDVlooBxJHTF/W+Vw+/hzzo5cjEgNcOMljAubpMGw1hzz0V6o57Fqn7u3WGQmEmjPKLqAYbHKTw/vbXCPLVJjcjzuqWjGAoVCzn+/rtpEfPWH0ZzvQyJXwk/NhgfsLJbHDr2nvBdUB1gZgVOKyP8gEc1zMXf3K9eHhWk+/9yXXEVw8rj4WszwkfLtgkA9fbO13lbCoS6yZHEEUMZjZAlMF018l3FGhF/bzVP6UI="
-
+      secure: GPyLLFBUVOcdksAJotel3hwmXsr0PXGwV32lFAQRoX3xRVUu/TsZzBkWMKfpI9DuzSoHVyPni+Q3GOCUl6h+ViKZzSi0UMaRmQ89yGzhD+y+JRkd7+s6YjITkgy44w3j9n9n/b1Y0C8dQaQFtp15Q2uOvoVPN6Mr4nddBUs7GDSYi3GblmAtUuKshYAmri6lbjJ9qCMuocnCD+m13CRNCawHdB/8hNvbZ0V+NrfZgyNNNseuTaDBYSe9ElWENgq7W3nJogmvxk8KAV24aB7Vm+uC4jmcOvkKvpqanSJDcAEiTleUDZ4HLW+AS53HJEDt/maVKSIwjOkn1noLQmfiq/QdzngkVealJcxlhROHxBq/WEfCpxcGs4W8YdxGrUeA/aVGOiEWTMeGOOitbtA2zf8knmSyBy/dmGsHNP5IDCvuwU6CTXFZpPpuskwa2QVLZgb3qopp1kpK2tA75XOICBetcfGFocc8KnRjjVjf3mYitIRstCSfQWsA1V7msO6qr0H2f7djZ98RP+FUcRMX/lm/xT2/KpeI2I0dMfWkca43+/Tc6rmNKl1bftA8VwZuaIXYQqw3HJMjnjKyGOQZXNWd4b8hy3tHkuIS8Qp+P6Hb0ZV1JOd8FBWr9fT/VqCzsp9wEfxXL6ilUpMXZ3zSvDG8GVyBZ/8JjTOfOAI+710=
 script:
-  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
+  - "$HOME/.m2/repository"
+  - "$HOME/.sonar/cache"
