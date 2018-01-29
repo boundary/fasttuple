@@ -6,11 +6,11 @@
     <parent>
         <artifactId>fasttuple</artifactId>
         <groupId>com.nickrobison</groupId>
-        <version>0.2.0</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>fasttuple-core</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
