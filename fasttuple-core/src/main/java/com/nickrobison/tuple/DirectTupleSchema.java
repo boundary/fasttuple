@@ -5,6 +5,7 @@ import com.nickrobison.tuple.codegen.TupleAllocatorGenerator;
 import com.nickrobison.tuple.unsafe.Coterie;
 import sun.misc.Unsafe;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -143,11 +144,27 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     @Override
+    public <T> T createTypedTuple(Class<T> clazz) throws Exception {
+        return clazz.cast(createTuple());
+    }
+
+    @Override
     public FastTuple[] createTupleArray(int size) throws Exception {
         long address = createRecordArray(size);
         FastTuple[] tuples = new FastTuple[size];
         for (int i = 0; i < size; i++) {
             tuples[i] = createTuple(address + byteSize * i);
+        }
+        return tuples;
+    }
+
+    @Override
+    public <T> T[] createTypedTupleArray(Class<T> clazz, int size) throws Exception {
+        final long address = createRecordArray(size);
+        @SuppressWarnings("unchecked")
+        T[] tuples = (T[]) Array.newInstance(clazz, size);
+        for (int i = 0; i < size; i++) {
+            tuples[i] = clazz.cast(createTuple(address + byteSize * i));
         }
         return tuples;
     }
@@ -159,7 +176,18 @@ public class DirectTupleSchema extends TupleSchema {
     }
 
     @Override
+    public <T> void destroyTypedTuple(T tuple) {
+        destroyTuple((FastTuple) tuple);
+    }
+
+    @Override
     public void destroyTupleArray(FastTuple[] ary) {
+        long address = unsafe.getLong(ary[0], addressOffset);
+        unsafe.freeMemory(address);
+    }
+
+    @Override
+    public <T> void destroyTypedTupleArray(T[] ary) {
         long address = unsafe.getLong(ary[0], addressOffset);
         unsafe.freeMemory(address);
     }
