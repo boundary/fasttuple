@@ -1,4 +1,12 @@
+[![Build Status](https://travis-ci.org/nickrobison/fasttuple.svg?branch=master)](https://travis-ci.org/nickrobison/fasttuple)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.nickrobison/fasttuple-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.nickrobison/fasttuple-core)
+[![JavaDoc](http://www.javadoc.io/badge/com.nickrobison/fasttuple-core.svg)](http://www.javadoc.io/doc/com.nickrobison/fasttuple-core)
+[![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 # FastTuple
+
+This repository is forked from [here](https://github.com/boundary/fasttuple), all credit to Cliff Moon and his team, it's a fantastic piece of work.
+I've made a few changes and pushed everything up to Maven. Enjoy!  
 
 ## Introduction
 
@@ -8,25 +16,17 @@ We wrote FastTuple to try and help solve this problem.  FastTuple generates hete
 
 FastTuple pulls off its trick via runtime bytecode generation.  The user supplies it with a schema of field names and types.  That schema is then built into a Java class definition which will contain accessor methods and either field definitions or the memory address for an off heap allocation, depending on which storage method was requested.  The resulting Java class gets compiled into bytecode and then loaded as a reflective Class object.  This Class object can then be used to create instances of the new class.
 
-## Building
-
-This package depends on Janino 2.7.4, which is not currently getting pushed to maven central.  As soon as that happens (we have a ticket in with the maintainer) we will begin pushing FastTuple to maven central as well.  In the meantime you can build FastTuple like so:
-
-```bash
-wget http://janino.net/download/janino-2.7.4.zip
-unzip janino-2.7.4.zip
-mvn install:install-file -Dfile=janino-2.7.4/janino.jar -Dsources=janino-2.7.4/janino-src.zip -DgroupId=org.codehaus.janino -DartifactId=janino -Dversion=2.7.4 -Dpackaging=jar
-mvn install:install-file -Dfile=janino-2.7.4/commons-compiler.jar -Dsources=janino-2.7.4/commons-compiler-src.zip -DgroupId=org.codehaus.janino -DartifactId=commons-compiler -Dversion=2.7.4 -Dpackaging=jar
-mvn install
-```
-
-## Note on GPG
-
-You'll also need to ensure that you have GPG available on the command line. Mac OS X and Windows users may need to install via (https://gpgtools.org/) or cygwin respectively.
-
 ## Usage
 
-Interaction with FastTuple primarily takes place via the TupleSchema class.  Each instance of TupleSchema describes a separate type of FastTuple both from the perspective of the FastTuple library and the JVM.  At this time, allowable field types are the primitive classes for: long, int, short, char, byte, float, double.  Support for String is planned for a later release.  Some examples:
+```xml
+<dependency>
+    <groupId>com.nickrobison</groupId>
+    <artifactId>fasttuple-core</artifactId>
+    <version>0.3.0</version>
+</dependency>
+```
+
+Interaction with FastTuple primarily takes place via the TupleSchema class.  Each instance of TupleSchema describes a separate type of FastTuple both from the perspective of the FastTuple library and the JVM.  At this time, allowable field types are the primitive classes for: long, int, short, char, byte, float, double, and boolean.  Support for String is planned for a later release.  Some examples:
 
 ### Heap Allocated Tuples
 

@@ -1,99 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.boundary</groupId>
-  <artifactId>fasttuple</artifactId>
-  <packaging>pom</packaging>
-  <version>0.1-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.nickrobison</groupId>
+    <artifactId>fasttuple</artifactId>
+    <packaging>pom</packaging>
+    <version>0.3.0</version>
 
-  <name>FastTuple</name>
-  <description>FastTuple is a library for generating heterogeneous tuples of primitive types from a runtime defined schema without boxing.</description>
-  <url>https://github.com/boundary/fasttuple</url>
+    <name>FastTuple</name>
+    <description>FastTuple is a library for generating heterogeneous tuples of primitive types from a runtime defined
+        schema without boxing.
+    </description>
+    <url>https://github.com/boundary/fasttuple</url>
 
-  <modules>
-    <module>fasttuple-core</module>
-    <module>fasttuple-bench</module>
-  </modules>
+    <modules>
+        <module>fasttuple-core</module>
+        <module>fasttuple-bench</module>
+    </modules>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <repository>
+                    <id>bintray-nickrobison-maven</id>
+                    <name>nickrobison-maven</name>
+                    <url>https://api.bintray.com/maven/nickrobison/maven/fasttuple/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadoc</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
 
-  <scm>
-    <connection>scm:git:git@github.com:boundary/fasttuple.git</connection>
-    <developerConnection>scm:git:git@github.com:boundary/fasttuple.git</developerConnection>
-    <url>git@github.com:boundary/fasttuple.git</url>
-  </scm>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-  <developers>
-    <developer>
-      <name>Cliff Moon</name>
-      <email>cliff@boundary.com</email>
-    </developer>
-    <developer>
-      <name>Philip Warren</name>
-      <email>philip@boundary.com</email>
-    </developer>
-  </developers>
+    <scm>
+        <connection>scm:git:git@github.com:nickrobison/fasttuple.git</connection>
+        <developerConnection>scm:git:git@github.com:nickrobison/fasttuple.git</developerConnection>
+        <url>git@github.com:nickrobison/fasttuple.git</url>
+    </scm>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    </license>
-  </licenses>
+    <developers>
+        <developer>
+            <name>Nick Robison</name>
+            <email>nick@nickrobison.com</email>
+        </developer>
+        <developer>
+            <name>Cliff Moon</name>
+            <email>cliff@boundary.com</email>
+        </developer>
+        <developer>
+            <name>Philip Warren</name>
+            <email>philip@boundary.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
 </project>
