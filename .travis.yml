@@ -10,7 +10,7 @@ addons:
       secure: GPyLLFBUVOcdksAJotel3hwmXsr0PXGwV32lFAQRoX3xRVUu/TsZzBkWMKfpI9DuzSoHVyPni+Q3GOCUl6h+ViKZzSi0UMaRmQ89yGzhD+y+JRkd7+s6YjITkgy44w3j9n9n/b1Y0C8dQaQFtp15Q2uOvoVPN6Mr4nddBUs7GDSYi3GblmAtUuKshYAmri6lbjJ9qCMuocnCD+m13CRNCawHdB/8hNvbZ0V+NrfZgyNNNseuTaDBYSe9ElWENgq7W3nJogmvxk8KAV24aB7Vm+uC4jmcOvkKvpqanSJDcAEiTleUDZ4HLW+AS53HJEDt/maVKSIwjOkn1noLQmfiq/QdzngkVealJcxlhROHxBq/WEfCpxcGs4W8YdxGrUeA/aVGOiEWTMeGOOitbtA2zf8knmSyBy/dmGsHNP5IDCvuwU6CTXFZpPpuskwa2QVLZgb3qopp1kpK2tA75XOICBetcfGFocc8KnRjjVjf3mYitIRstCSfQWsA1V7msO6qr0H2f7djZ98RP+FUcRMX/lm/xT2/KpeI2I0dMfWkca43+/Tc6rmNKl1bftA8VwZuaIXYQqw3HJMjnjKyGOQZXNWd4b8hy3tHkuIS8Qp+P6Hb0ZV1JOd8FBWr9fT/VqCzsp9wEfxXL6ilUpMXZ3zSvDG8GVyBZ/8JjTOfOAI+710=
     branches:
       - master
-      - travis_fix
+      - development
 script:
 - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
 cache:
