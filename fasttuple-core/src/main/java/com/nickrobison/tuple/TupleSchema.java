@@ -213,14 +213,37 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
     public abstract FastTuple createTuple() throws Exception;
 
     /**
+     * Allocates a new typed tuple, completely separate from any pooling.
+     * Use care to call {@link Builder#implementInterface(Class)} before using this method
+     *
+     * @param clazz - {@link Class} implemented by the Tuple
+     * @param <T> - {@link T} type parameter
+     * @return - {@link FastTuple} case to type {@link T}
+     * @throws Exception - Throws an exception if unable to allocate tuple or cast to the specified type
+     */
+    public abstract <T> T createTypedTuple(Class<T> clazz) throws Exception;
+
+    /**
      * Allocates an array of tuples. This method will try to ensure that tuples get allocated
      * in adjacent memory, however with the heap based allocation this is not guaranteed.
      *
      * @param size the number of tuples in the array.
      * @return - Array of {@link FastTuple}
-     * @throws Exception - Throws is unable to allocate tuple array
+     * @throws Exception - Throws if unable to allocate tuple array
      */
     public abstract FastTuple[] createTupleArray(int size) throws Exception;
+
+    /**
+     * * Allocates an array of tuples. This method will try to ensure that tuples get allocated
+     * in adjacent memory, however with the heap based allocation this is not guaranteed.
+     *
+     * @param clazz - {@link Class} implemented by the Tuple
+     * @param size - the number of tuples in the array
+     * @param <T> - {@link T} type parameter
+     * @return - Array of {@link FastTuple} cast to type {@link T}
+     * @throws Exception - Throws is unable to allocate tuple array or cast to the specified type
+     */
+    public abstract <T> T[] createTypedTupleArray(Class<T> clazz, int size) throws Exception;
 
     /**
      * Deallocates memory for a tuple.
@@ -230,11 +253,27 @@ public abstract class TupleSchema implements Loader<FastTuple>, Destroyer<FastTu
     public abstract void destroyTuple(FastTuple tuple);
 
     /**
+     ** Deallocates memory for a typed tuple.
+     *
+     * @param tuple - {@link FastTuple} cast to type {@link T}
+     * @param <T> - {@link T} underlying class implemented by tuples
+     */
+    public abstract <T> void destroyTypedTuple(T tuple);
+
+    /**
      * Deallocates memory for an array of tuples.  Assumes that they were allocated as an array.
      *
      * @param ary - Array of {@link FastTuple} to deallocate
      */
     public abstract void destroyTupleArray(FastTuple[] ary);
+
+    /**
+     * Deallocates memory for an array of typed tuples.  Assumes that they were allocated as an array.
+     *
+     * @param ary - Array of typed {@link FastTuple} to deallocate
+     * @param <T> - {@link T} underlying class implemented by tuples
+     */
+    public abstract <T> void destroyTypedTupleArray(T[] ary);
 
     @Override
     public void destroyArray(FastTuple[] ary) {

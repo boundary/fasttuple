@@ -2,6 +2,8 @@ package com.nickrobison.tuple;
 
 import org.junit.Test;
 
+import java.lang.reflect.Type;
+
 import static org.junit.Assert.*;
 
 /**
@@ -123,6 +125,44 @@ public class DirectTupleSchemaTest {
             assertEquals(0.125f, tuples[i].getFloat(5), 0.001);
             assertEquals(1000000l, tuples[i].getLong(6));
             assertEquals(0.125, tuples[i].getDouble(7), 0.001);
+        }
+    }
+
+    @Test
+    public void createTypedTupleArrayTest() throws Exception {
+        DirectTupleSchema schema = TupleSchema.builder().
+                addField("aByte", Byte.TYPE).
+                addField("aChar", Character.TYPE).
+                addField("aInt", Integer.TYPE).
+                addField("aShort", Short.TYPE).
+                addField("aFloat", Float.TYPE).
+                addField("aLong", Long.TYPE).
+                addField("aDouble", Double.TYPE).
+                implementInterface(TypedTuple.class).
+                directMemory().
+                build();
+
+        TypedTuple[] tuples = schema.createTypedTupleArray(TypedTuple.class,10);
+        assertEquals(10, tuples.length);
+
+        for (int i=0; i < 10; i++) {
+            assertNotNull(tuples[i]);
+
+            tuples[i].aByte((byte) 1);
+            tuples[i].aChar('b');
+            tuples[i].aInt(4);
+            tuples[i].aShort((short) 6);
+            tuples[i].aFloat(0.125f);
+            tuples[i].aLong(1000000l);
+            tuples[i].aDouble(0.125);
+
+            assertEquals(1, tuples[i].aByte());
+            assertEquals('b', tuples[i].aChar());
+            assertEquals(4, tuples[i].aInt());
+            assertEquals(6, tuples[i].aShort());
+            assertEquals(0.125f, tuples[i].aFloat(), 0.001);
+            assertEquals(1000000l, tuples[i].aLong());
+            assertEquals(0.125, tuples[i].aDouble(), 0.001);
         }
     }
 }
