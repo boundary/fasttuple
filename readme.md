@@ -22,7 +22,7 @@ FastTuple pulls off its trick via runtime bytecode generation.  The user supplie
 <dependency>
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-core</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
