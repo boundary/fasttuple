@@ -1,0 +1,49 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+strategy:
+  matrix:
+    Linux_Java8:
+      imageName: 'ubuntu-latest'
+      jdk: '1.8'
+    # Linux_Java11:
+    #   imageName: 'ubuntu-latest'
+    #   jdk: '1.11'
+    Mac_Java8:
+      jdk: '1.8'
+      imageName: 'macos-10.14'
+    # Mac_Java11:
+    #   jdk: '1.11'
+    #   imageName: 'macos-10.14'
+    Windows_Java8:
+      imageName: 'vs2017-win2016'
+      jdk: '1.8'
+    # Windows_Java11:
+    #   imageName: 'vs2017-win2016'
+    #   jdk: '1.11'
+
+pool:
+  vmImage: $(imageName)
+
+steps:
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'Sonar Cloud (FastTuple)'
+    organization: 'nickrobison-github'
+    scannerMode: 'Other'
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '$(jdk)'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+    sonarQubeRunAnalysis: true
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
