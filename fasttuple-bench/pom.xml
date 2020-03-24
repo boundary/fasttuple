@@ -64,7 +64,7 @@ questions.
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jmh.version>1.20</jmh.version>
+        <jmh.version>1.23</jmh.version>
     </properties>
 
     <build>
