@@ -28,6 +28,11 @@ pool:
   vmImage: $(imageName)
 
 steps:
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'Sonar Cloud (FastTuple)'
+    organization: 'nickrobison-github'
+    scannerMode: 'Other'
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
@@ -38,3 +43,6 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
