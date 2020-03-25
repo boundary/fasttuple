@@ -2,9 +2,10 @@ package com.nickrobison.tuple.codegen;
 
 import com.nickrobison.tuple.FastTuple;
 import com.nickrobison.tuple.TupleSchema;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by cliff on 5/12/14.

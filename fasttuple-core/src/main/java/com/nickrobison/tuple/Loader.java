@@ -3,6 +3,7 @@ package com.nickrobison.tuple;
 /**
  * Created by cliff on 5/15/14.
  */
+@FunctionalInterface
 public interface Loader<T> {
-    public T[] createArray(int size) throws Exception;
+    T[] createArray(int size) throws Exception;
 }
