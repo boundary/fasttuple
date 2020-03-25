@@ -3,9 +3,9 @@ package com.nickrobison.tuple.codegen;
 import com.nickrobison.tuple.FastTuple;
 import com.nickrobison.tuple.HeapTupleSchema;
 import com.nickrobison.tuple.TupleSchema;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by cliff on 5/9/14.
@@ -25,7 +25,7 @@ public class HeapTupleCodeGeneratorTest {
                 build();
 
         HeapTupleCodeGenerator codegen = new HeapTupleCodeGenerator(null, schema.getFieldNames(), schema.getFieldTypes());
-        Class clazz = codegen.cookToClass();
+        Class<?> clazz = codegen.cookToClass();
         assertGetterAndSetterGenerated(clazz, "a", long.class);
         assertGetterAndSetterGenerated(clazz, "b", int.class);
         assertGetterAndSetterGenerated(clazz, "c", short.class);
@@ -112,12 +112,12 @@ public class HeapTupleCodeGeneratorTest {
         assertTrue(tuple instanceof StaticBinding);
     }
 
-    public void assertGetterAndSetterGenerated(Class clazz, String name, Class type) throws Exception {
+    public void assertGetterAndSetterGenerated(Class<?> clazz, String name, Class<?> type) throws Exception {
         assertEquals(type, clazz.getDeclaredMethod(name).getReturnType());
         assertNotNull(clazz.getDeclaredMethod(name, type));
     }
 
-    public void assertGetterAndSetterRoundTrip(Object tuple, Class clazz, String name, Class type, Object value) throws Exception {
+    public void assertGetterAndSetterRoundTrip(Object tuple, Class<?> clazz, String name, Class<?> type, Object value) throws Exception {
         clazz.getDeclaredMethod(name, type).invoke(tuple, value);
         assertEquals(value, clazz.getDeclaredMethod(name).invoke(tuple));
     }
@@ -152,8 +152,8 @@ public class HeapTupleCodeGeneratorTest {
         }
     }
 
-    public static interface StaticBinding {
-        public void a(long a);
-        public long a();
+    public interface StaticBinding {
+        void a(long a);
+        long a();
     }
 }

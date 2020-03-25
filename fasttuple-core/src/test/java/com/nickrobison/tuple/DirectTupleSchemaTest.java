@@ -1,10 +1,9 @@
 package com.nickrobison.tuple;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Type;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Created by cliff on 5/4/14.
@@ -79,7 +78,7 @@ public class DirectTupleSchemaTest {
         schema.setInt(record,    2, 50010);
         schema.setShort(record,  3, (short)2500);
         schema.setFloat(record,  4, 0.1f);
-        schema.setLong(record,   5, 100000l);
+        schema.setLong(record,   5, 100000L);
         schema.setDouble(record, 6, 0.59403);
 
         assertEquals(6, schema.getByte(record, 0));
@@ -87,7 +86,7 @@ public class DirectTupleSchemaTest {
         assertEquals(50010, schema.getInt(record, 2));
         assertEquals(2500, schema.getShort(record, 3));
         assertEquals(0.1, schema.getFloat(record, 4), 0.00001);
-        assertEquals(100000l, schema.getLong(record, 5));
+        assertEquals(100000L, schema.getLong(record, 5));
         assertEquals(0.59403, schema.getDouble(record, 6), 0.00001);
     }
 
@@ -115,7 +114,7 @@ public class DirectTupleSchemaTest {
             tuples[i].setInt(3, 4);
             tuples[i].setShort(4, (short) 6);
             tuples[i].setFloat(5, 0.125f);
-            tuples[i].setLong(6, 1000000l);
+            tuples[i].setLong(6, 1000000L);
             tuples[i].setDouble(7, 0.125);
 
             assertEquals(1, tuples[i].getByte(1));
@@ -123,7 +122,7 @@ public class DirectTupleSchemaTest {
             assertEquals(4, tuples[i].getInt(3));
             assertEquals(6, tuples[i].getShort(4));
             assertEquals(0.125f, tuples[i].getFloat(5), 0.001);
-            assertEquals(1000000l, tuples[i].getLong(6));
+            assertEquals(1000000L, tuples[i].getLong(6));
             assertEquals(0.125, tuples[i].getDouble(7), 0.001);
         }
     }
@@ -153,7 +152,7 @@ public class DirectTupleSchemaTest {
             tuples[i].aInt(4);
             tuples[i].aShort((short) 6);
             tuples[i].aFloat(0.125f);
-            tuples[i].aLong(1000000l);
+            tuples[i].aLong(1000000L);
             tuples[i].aDouble(0.125);
 
             assertEquals(1, tuples[i].aByte());
@@ -161,7 +160,7 @@ public class DirectTupleSchemaTest {
             assertEquals(4, tuples[i].aInt());
             assertEquals(6, tuples[i].aShort());
             assertEquals(0.125f, tuples[i].aFloat(), 0.001);
-            assertEquals(1000000l, tuples[i].aLong());
+            assertEquals(1000000L, tuples[i].aLong());
             assertEquals(0.125, tuples[i].aDouble(), 0.001);
         }
     }
