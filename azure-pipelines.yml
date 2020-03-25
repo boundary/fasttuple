@@ -44,6 +44,8 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
     sonarQubeRunAnalysis: true
+    codeCoverageToolOption: 'jaCoCo'
+    codeCoverageSourceDirectories: 'fasttuple-core/src/main/java'
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
