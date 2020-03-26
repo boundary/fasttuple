@@ -12,17 +12,22 @@
     <artifactId>fasttuple-core</artifactId>
     <version>0.3.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <janino.version>3.1.0</janino.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.0.8</version>
+            <version>${janino.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>commons-compiler</artifactId>
-            <version>3.1.2</version>
+            <version>${janino.version}</version>
         </dependency>
 
         <dependency>
@@ -38,11 +43,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-    </properties>
 
     <build>
         <plugins>

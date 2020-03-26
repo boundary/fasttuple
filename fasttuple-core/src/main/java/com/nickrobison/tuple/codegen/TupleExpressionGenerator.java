@@ -146,7 +146,7 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
         cu.setPackageDeclaration(new Java.PackageDeclaration(loc, packageName));
         Java.PackageMemberClassDeclaration cd = new Java.PackageMemberClassDeclaration(loc,
                 null,
-                new Java.Modifiers(Mod.PUBLIC),
+                new Java.AccessModifier[]{new Java.AccessModifier(PUBLIC, loc)},
                 className,
                 null,
                 null,
@@ -165,12 +165,13 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
     private Java.MethodDeclarator generateFrontendMethod(Location loc) throws Exception {
         return new Java.MethodDeclarator(loc,
                 null,
-                new Java.Modifiers(Mod.PUBLIC),
+                new Java.AccessModifier[]{new Java.AccessModifier(PUBLIC, loc)},
                 null,
                 classToType(loc, returnType),
                 "evaluate",
                 generateArgs(loc, FastTuple.class),
                 new Java.Type[0],
+                null,
                 Lists.<Java.BlockStatement>newArrayList(
                         maybeGenerateReturn(loc,
                                 new Java.MethodInvocation(
@@ -180,7 +181,7 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
                                         new Java.Rvalue[] {
                                             new Java.Cast(
                                                     loc,
-                                                    new Java.ReferenceType(loc, schema.tupleClass().getCanonicalName().split("\\."), null),
+                                                    new Java.ReferenceType(loc, new Java.NormalAnnotation[]{}, schema.tupleClass().getCanonicalName().split("\\."), null),
                                                     new Java.AmbiguousName(loc, new String[] {"tuple"})
                                             )
                                         }
@@ -204,12 +205,13 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
 
         return new Java.MethodDeclarator(loc,
                 null,
-                new Java.Modifiers(Mod.PRIVATE),
+                new Java.AccessModifier[]{new Java.AccessModifier(PUBLIC, loc)},
                 null,
                 classToType(loc, returnType),
                 "doEval",
                 generateArgs(loc, schema.tupleClass()),
                 new Java.Type[0],
+                null,
                 statements
         );
     }
@@ -228,7 +230,7 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
                 new Java.FunctionDeclarator.FormalParameter[] {
                         new Java.FunctionDeclarator.FormalParameter(
                                 loc,
-                                true,
+                                new Java.AccessModifier[]{new Java.AccessModifier(PUBLIC, loc)},
                                 classToType(loc, c),
                                 "tuple"
                         )

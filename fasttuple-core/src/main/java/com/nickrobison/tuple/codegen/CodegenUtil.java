@@ -3,18 +3,19 @@ package com.nickrobison.tuple.codegen;
 import com.google.common.collect.Lists;
 import org.codehaus.commons.compiler.Location;
 import org.codehaus.janino.Java;
-import org.codehaus.janino.Mod;
 
 /**
  * Created by cliff on 5/14/14.
  */
 public final class CodegenUtil {
 
+    public static final String PUBLIC = "public";
+
     public static Java.ConstructorDeclarator nullConstructor(Location loc) {
         return new Java.ConstructorDeclarator(
                 loc,
                 null,
-                new Java.Modifiers(Mod.PUBLIC),
+                new Java.AccessModifier[]{new Java.AccessModifier(PUBLIC, loc)},
                 new Java.FunctionDeclarator.FormalParameters(
                         loc,
                         new Java.FunctionDeclarator.FormalParameter[0],
@@ -22,7 +23,7 @@ public final class CodegenUtil {
                 ),
                 new Java.Type[0],
                 null,
-                Lists.<Java.BlockStatement>newArrayList()
+                Lists.newArrayList()
         );
     }
 
