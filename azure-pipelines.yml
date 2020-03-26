@@ -27,25 +27,32 @@ strategy:
 pool:
   vmImage: $(imageName)
 
-steps:
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'Sonar Cloud (FastTuple)'
-    organization: 'nickrobison-github'
-    scannerMode: 'Other'
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '$(jdk)'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
-    sonarQubeRunAnalysis: true
-    codeCoverageToolOption: 'jaCoCo'
-    codeCoverageSourceDirectories: 'fasttuple-core/src/main/java'
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
+stages:
+  - stage: Build
+    displayName: Build and Test
+    jobs:
+      - job: Build
+        steps:
+          - task: SonarCloudPrepare@1
+            inputs:
+              SonarCloud: 'Sonar Cloud (FastTuple)'
+              organization: 'nickrobison-github'
+              scannerMode: 'Other'
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '$(jdk)'
+              jdkArchitectureOption: 'x64'
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              goals: 'package'
+              sonarQubeRunAnalysis: true
+              codeCoverageToolOption: 'jaCoCo'
+              codeCoverageSourceDirectories: 'fasttuple-core/src/main/java'
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
+
+
