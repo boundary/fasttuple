@@ -4,11 +4,11 @@
     <parent>
         <artifactId>fasttuple</artifactId>
         <groupId>com.nickrobison</groupId>
-        <version>0.3.1</version>
+        <version>0.3.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>fasttuple-core</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
