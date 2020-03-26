@@ -5,7 +5,7 @@
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple</artifactId>
     <packaging>pom</packaging>
-    <version>0.3.0</version>
+    <version>0.3.1-SNAPSHOT</version>
 
     <name>FastTuple</name>
     <description>FastTuple is a library for generating heterogeneous tuples of primitive types from a runtime defined
@@ -121,4 +121,16 @@
         </license>
     </licenses>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-nickrobison-maven</id>
+            <name>nickrobison-maven</name>
+            <url>https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1</url>
+        </repository>
+        <snapshotRepository>
+            <id>bintray-nickrobison-maven</id>
+            <name>JFrog OSS Repository</name>
+            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
