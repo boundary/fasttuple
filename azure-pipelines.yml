@@ -5,31 +5,11 @@
 
 stages:
   - stage: Build
-    displayName: Build and Test
+    displayName: Build Source Code
     pool:
-      vmImage: $(imageName)
+      vmImage: "ubuntu-latest"
     jobs:
-      - job: Build
-        strategy:
-          matrix:
-            Linux_Java8:
-              imageName: 'ubuntu-latest'
-              jdk: '1.8'
-            # Linux_Java11:
-            #   imageName: 'ubuntu-latest'
-            #   jdk: '1.11'
-            Mac_Java8:
-              jdk: '1.8'
-              imageName: 'macos-10.14'
-            # Mac_Java11:
-            #   jdk: '1.11'
-            #   imageName: 'macos-10.14'
-            Windows_Java8:
-              imageName: 'vs2017-win2016'
-              jdk: '1.8'
-            # Windows_Java11:
-            #   imageName: 'vs2017-win2016'
-            #   jdk: '1.11'
+      - job: Compile
         steps:
           - task: SonarCloudPrepare@1
             inputs:
@@ -41,24 +21,77 @@ stages:
               mavenPomFile: 'pom.xml'
               mavenOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.8'
+              jdkArchitectureOption: 'x64'
+              goals: 'test-compile'
+              sonarQubeRunAnalysis: true
+          - task: SonarCloudPublish@1
+            inputs:
+              pollingTimeoutSec: '300'
+          - task: CopyFiles@2
+            inputs:
+              contents: "fasttuple-*/**"
+              targetFolder: $(Build.ArtifactStagingDirectory)
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: artifacts
+  - stage: Test
+    displayName: Run Cross-Platform Tests
+    pool:
+      vmImage: $(imageName)
+    jobs:
+      - job: Test
+        strategy:
+          matrix:
+            Linux_Java8:
+              imageName: 'ubuntu-latest'
+              jdk: '1.8'
+#            Linux_Java11:
+#              imageName: 'ubuntu-latest'
+#              jdk: '1.11'
+            Mac_Java8:
+              jdk: '1.8'
+              imageName: 'macos-10.14'
+                # Mac_Java11:
+                #   jdk: '1.11'
+                #   imageName: 'macos-10.14'
+            Windows_Java8:
+              imageName: 'vs2017-win2016'
+              jdk: '1.8'
+#            Windows_Java11:
+#              imageName: 'vs2017-win2016'
+#              jdk: '1.11'
+        steps:
+          - download: current
+            artifact: artifacts
+          - task: CopyFiles@2
+            inputs:
+              sourceFolder: $(Pipeline.Workspace)/artifacts
+              targetFolder: $(Build.SourcesDirectory)
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
               jdkVersionOption: '$(jdk)'
               jdkArchitectureOption: 'x64'
               publishJUnitResults: true
               testResultsFiles: '**/surefire-reports/TEST-*.xml'
-              goals: 'package'
-              sonarQubeRunAnalysis: true
-              codeCoverageToolOption: 'jaCoCo'
-              codeCoverageSourceDirectories: 'fasttuple-core/src/main/java'
-          - task: SonarCloudPublish@1
-            inputs:
-              pollingTimeoutSec: '300'
+              goals: 'test'
   - stage: Deploy
     displayName: Deploy to Maven
-    dependsOn: Build
+    dependsOn: Test
+    pool:
+      vmImage: "ubuntu-latest"
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     jobs:
       - job: Deploy
         steps:
+          - download: current
+            artifact: artifacts
+          - task: CopyFiles@2
+            inputs:
+              sourceFolder: $(Pipeline.Workspace)/artifacts
+              targetFolder: $(Build.SourcesDirectory)
           - task: MavenAuthenticate@0
             inputs:
               mavenServiceConnections: 'jCenter maven'
@@ -70,8 +103,6 @@ stages:
               jdkVersionOption: '1.8'
               jdkArchitectureOption: 'x64'
               mavenAuthenticateFeed: true
-              publishJUnitResults: false
-              testResultsFiles: '**/surefire-reports/TEST-*.xml'
               goals: 'deploy'
 
 
