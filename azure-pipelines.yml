@@ -16,15 +16,15 @@ stages:
               SonarCloud: 'Sonar Cloud (FastTuple)'
               organization: 'nickrobison-github'
               scannerMode: 'Other'
-          - task: Maven@3
+          - task: Gradle@2
             inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
-              jdkArchitectureOption: 'x64'
-              goals: 'test-compile'
+              tasks: 'testClasses'
               sonarQubeRunAnalysis: true
+              sqGradlePluginVersionChoice: 'build'
+              jdkArchitectureOption: 'x64'
           - task: SonarCloudPublish@1
             inputs:
               pollingTimeoutSec: '300'
@@ -67,22 +67,31 @@ stages:
             inputs:
               sourceFolder: $(Pipeline.Workspace)/artifacts
               targetFolder: $(Build.SourcesDirectory)
-          - task: Maven@3
+          - task: Gradle@2
             inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '$(jdk)'
+              tasks: 'build'
               jdkArchitectureOption: 'x64'
               publishJUnitResults: true
-              testResultsFiles: '**/surefire-reports/TEST-*.xml'
-              goals: 'test'
+              testResultsFiles: '**/test-results/test/binary/TEST-*.xml'
+#          - task: Maven@3
+#            inputs:
+#              mavenPomFile: 'pom.xml'
+#              mavenOptions: '-Xmx3072m'
+#              javaHomeOption: 'JDKVersion'
+#              jdkVersionOption: '$(jdk)'
+#              jdkArchitectureOption: 'x64'
+#              publishJUnitResults: true
+#              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#              goals: 'test'
   - stage: Deploy
     displayName: Deploy to Maven
     dependsOn: Test
     pool:
       vmImage: "ubuntu-latest"
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     jobs:
       - job: Deploy
         steps:
@@ -95,15 +104,22 @@ stages:
           - task: MavenAuthenticate@0
             inputs:
               mavenServiceConnections: 'jCenter maven'
-          - task: Maven@3
+          - task: Gradle@2
             inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '1.8'
+              jdkVersionOption: '$(jdk)'
+              tasks: 'publish'
               jdkArchitectureOption: 'x64'
-              mavenAuthenticateFeed: true
-              goals: 'deploy'
+#          - task: Maven@3
+#            inputs:
+#              mavenPomFile: 'pom.xml'
+#              mavenOptions: '-Xmx3072m'
+#              javaHomeOption: 'JDKVersion'
+#              jdkVersionOption: '1.8'
+#              jdkArchitectureOption: 'x64'
+#              mavenAuthenticateFeed: true
+#              goals: 'deploy'
 
 
 
