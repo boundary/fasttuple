@@ -28,30 +28,30 @@ allprojects {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-
-        }
-    }
-
-    repositories {
-        maven {
-            credentials {
-                val bintrayUsername: String by project
-                val bintrayPassword: String by project
-                username = bintrayUsername
-                password = bintrayPassword
-            }
-            val releasesRepoUrl = "https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1"
-            val snapshotsRepoUrl = "http://oss.jfrog.org/artifactory/oss-snapshot-local"
-            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
-            name = "bintray-nickrobison-maven"
-        }
-    }
-}
-
-signing {
-    useGpgCmd()
-    sign(publishing.publications["mavenJava"])
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("mavenJava") {
+//
+//        }
+//    }
+//
+//    repositories {
+//        maven {
+//            credentials {
+//                val bintrayUsername: String by project
+//                val bintrayPassword: String by project
+//                username = bintrayUsername
+//                password = bintrayPassword
+//            }
+//            val releasesRepoUrl = "https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1"
+//            val snapshotsRepoUrl = "http://oss.jfrog.org/artifactory/oss-snapshot-local"
+//            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+//            name = "bintray-nickrobison-maven"
+//        }
+//    }
+//}
+//
+//signing {
+//    useGpgCmd()
+//    sign(publishing.publications["mavenJava"])
+//}
