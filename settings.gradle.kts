@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "fasttuple"
-include("fasttuple-core")
+include("fasttuple-core", "fasttuple-bench")
