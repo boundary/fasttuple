@@ -2,6 +2,8 @@ val janinoVersion by extra("3.1.0")
 plugins {
     signing
     `maven-publish`
+    jacoco
+    id("org.sonarqube") version "2.8"
 }
 
 allprojects {
@@ -10,6 +12,7 @@ allprojects {
 
     apply(plugin = "java")
     apply(plugin = "signing")
+    apply(plugin = "org.sonarqube")
 
     repositories {
         jcenter()

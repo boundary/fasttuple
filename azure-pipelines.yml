@@ -21,10 +21,12 @@ stages:
               gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
-              tasks: 'testClasses'
+              tasks: 'build'
               sonarQubeRunAnalysis: true
               sqGradlePluginVersionChoice: 'build'
               jdkArchitectureOption: 'x64'
+              publishJUnitResults: true
+              testResultsFiles: '**/test-results/test/binary/TEST-*.xml'
           - task: SonarCloudPublish@1
             inputs:
               pollingTimeoutSec: '300'
@@ -42,9 +44,6 @@ stages:
       - job: Test
         strategy:
           matrix:
-            Linux_Java8:
-              imageName: 'ubuntu-latest'
-              jdk: '1.8'
             Linux_Java11:
               imageName: 'ubuntu-latest'
               jdk: '1.11'
@@ -108,7 +107,7 @@ stages:
             inputs:
               gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '$(jdk)'
+              jdkVersionOption: '1.8'
               tasks: 'publish'
               jdkArchitectureOption: 'x64'
 #          - task: Maven@3
