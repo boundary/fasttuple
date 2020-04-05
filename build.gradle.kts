@@ -14,6 +14,7 @@ allprojects {
     apply(plugin = "signing")
     apply(plugin = "org.sonarqube")
     apply(plugin = "java")
+    apply(plugin = "jacoco")
 
     repositories {
         jcenter()
@@ -33,23 +34,20 @@ allprojects {
     }
 
     tasks.create("jacocoRootReport", JacocoReport::class) {
-        group = "Verification"
+        dependsOn(tasks.jacocoTestReport)
+        group = "Report"
         description = "Generate Jacoco reports for Azure Pipelines"
 
         reports {
             xml.isEnabled = true
+            xml.destination = file("$buildDir/reports/jacoco")
             html.isEnabled = true
             csv.isEnabled = false
         }
     }
 }
 
-tasks.test {
-    extensions.configure(JacocoTaskExtension::class) {
-        setDestinationFile(file("$buildDir/jacoco/jacocoTest.exec"))
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
-    }
-}
+
 
 publishing {
     publications {
