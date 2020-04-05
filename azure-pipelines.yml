@@ -27,6 +27,7 @@ stages:
               jdkArchitectureOption: 'x64'
               publishJUnitResults: true
               testResultsFiles: '**/test-results/test/binary/TEST-*.xml'
+              codeCoverageToolOption: 'jaCoCo'
           - task: SonarCloudPublish@1
             inputs:
               pollingTimeoutSec: '300'
