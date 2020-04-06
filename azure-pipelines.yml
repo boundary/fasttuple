@@ -76,6 +76,12 @@ stages:
     pool:
       vmImage: "ubuntu-latest"
 #    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      - name: BINTRAY_USER
+        value: $(BINTRAY_USER)
+      - name: BINTRAY_APIKEY
+        value: $(BINTRAY_APIKEY)
+      - group: deploy-variables
     jobs:
       - job: Deploy
         steps:
