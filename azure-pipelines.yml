@@ -75,7 +75,7 @@ stages:
     dependsOn: Test
     pool:
       vmImage: "ubuntu-latest"
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+#    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     jobs:
       - job: Deploy
         steps:
