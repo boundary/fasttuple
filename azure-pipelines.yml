@@ -21,13 +21,12 @@ stages:
               gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
-              tasks: 'build'
+              tasks: 'build jacocoTestReport'
               sonarQubeRunAnalysis: true
               sqGradlePluginVersionChoice: 'build'
               jdkArchitectureOption: 'x64'
               publishJUnitResults: true
-              testResultsFiles: '**/test-results/test/binary/TEST-*.xml'
-              codeCoverageToolOption: 'jaCoCo'
+              testResultsFiles: '**/test-results/test/TEST-*.xml'
           - task: SonarCloudPublish@1
             inputs:
               pollingTimeoutSec: '300'

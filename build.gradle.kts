@@ -33,16 +33,9 @@ allprojects {
         implementation("com.google.guava:guava:28.0-jre")
     }
 
-    tasks.create("jacocoRootReport", JacocoReport::class) {
-        dependsOn(tasks.jacocoTestReport)
-        group = "Report"
-        description = "Generate Jacoco reports for Azure Pipelines"
-
+    tasks.jacocoTestReport {
         reports {
             xml.isEnabled = true
-            xml.destination = file("$buildDir/reports/jacoco")
-            html.isEnabled = true
-            csv.isEnabled = false
         }
     }
 }
