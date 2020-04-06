@@ -1,4 +1,3 @@
-val janinoVersion by extra("3.1.0")
 plugins {
     java
     signing
@@ -7,14 +6,18 @@ plugins {
     id("org.sonarqube") version "2.8"
 }
 
+val janinoVersion by extra("3.1.0")
+
 allprojects {
     group = "com.nickrobison"
     version = "0.3.2-SNAPSHOT"
+    val isRelease = !version.toString().endsWith("SNAPSHOT")
 
     apply(plugin = "signing")
     apply(plugin = "org.sonarqube")
     apply(plugin = "java")
     apply(plugin = "jacoco")
+    apply(plugin = "maven-publish")
 
     repositories {
         jcenter()
@@ -38,33 +41,34 @@ allprojects {
             xml.isEnabled = true
         }
     }
-}
 
-
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-        }
-    }
-
-    repositories {
-        maven {
-            credentials {
-                val bintrayUsername: String? by project
-                val bintrayPassword: String? by project
-                username = bintrayUsername ?: System.getenv("BINTRAY_USER")
-                password = bintrayPassword ?: System.getenv("BINTRAY_APIKEY")
+    publishing {
+        publications {
+            create<MavenPublication>("mavenJava") {
             }
-            val releasesRepoUrl = "https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1"
-            val snapshotsRepoUrl = "http://oss.jfrog.org/artifactory/oss-snapshot-local"
-            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
-            name = "bintray-nickrobison-maven"
+        }
+
+        repositories {
+            maven {
+                credentials {
+                    val bintrayUsername: String? by project
+                    val bintrayPassword: String? by project
+                    username = bintrayUsername ?: System.getenv("BINTRAY_USER")
+                    password = bintrayPassword ?: System.getenv("BINTRAY_APIKEY")
+                }
+                val releasesRepoUrl = "https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1"
+                val snapshotsRepoUrl = "http://oss.jfrog.org/artifactory/oss-snapshot-local"
+                url = uri(if (isRelease) releasesRepoUrl else snapshotsRepoUrl)
+                name = "bintray-nickrobison-maven"
+            }
         }
     }
-}
 
-signing {
-    useGpgCmd()
-    sign(publishing.publications["mavenJava"])
+    signing {
+        isRequired = isRelease
+        useGpgCmd()
+        if (isRequired) {
+            sign(publishing.publications["mavenJava"])
+        }
+    }
 }
