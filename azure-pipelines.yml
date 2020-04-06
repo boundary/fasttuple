@@ -75,12 +75,8 @@ stages:
     dependsOn: Test
     pool:
       vmImage: "ubuntu-latest"
-#    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
     variables:
-      - name: BINTRAY_USER
-        value: $(BINTRAY_USER)
-      - name: BINTRAY_APIKEY
-        value: $(BINTRAY_APIKEY)
       - group: deploy-variables
     jobs:
       - job: Deploy
@@ -91,9 +87,6 @@ stages:
             inputs:
               sourceFolder: $(Pipeline.Workspace)/artifacts
               targetFolder: $(Build.SourcesDirectory)
-          - task: MavenAuthenticate@0
-            inputs:
-              mavenServiceConnections: 'jCenter maven'
           - task: Gradle@2
             inputs:
               gradleOptions: '-Xmx3072m'
