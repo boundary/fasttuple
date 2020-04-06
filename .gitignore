@@ -2,3 +2,8 @@
 target
 *.iml
 hs_err*
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

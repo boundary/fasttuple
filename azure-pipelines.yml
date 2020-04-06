@@ -1,8 +1,3 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 stages:
   - stage: Build
     displayName: Build Source Code
@@ -16,15 +11,17 @@ stages:
               SonarCloud: 'Sonar Cloud (FastTuple)'
               organization: 'nickrobison-github'
               scannerMode: 'Other'
-          - task: Maven@3
+          - task: Gradle@2
             inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
-              jdkArchitectureOption: 'x64'
-              goals: 'test-compile'
+              tasks: 'build jacocoTestReport'
               sonarQubeRunAnalysis: true
+              sqGradlePluginVersionChoice: 'build'
+              jdkArchitectureOption: 'x64'
+              publishJUnitResults: true
+              testResultsFiles: '**/test-results/test/TEST-*.xml'
           - task: SonarCloudPublish@1
             inputs:
               pollingTimeoutSec: '300'
@@ -42,9 +39,6 @@ stages:
       - job: Test
         strategy:
           matrix:
-            Linux_Java8:
-              imageName: 'ubuntu-latest'
-              jdk: '1.8'
             Linux_Java11:
               imageName: 'ubuntu-latest'
               jdk: '1.11'
@@ -67,22 +61,23 @@ stages:
             inputs:
               sourceFolder: $(Pipeline.Workspace)/artifacts
               targetFolder: $(Build.SourcesDirectory)
-          - task: Maven@3
+          - task: Gradle@2
             inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '$(jdk)'
+              tasks: 'build'
               jdkArchitectureOption: 'x64'
               publishJUnitResults: true
-              testResultsFiles: '**/surefire-reports/TEST-*.xml'
-              goals: 'test'
+              testResultsFiles: '**/test-results/test/TEST-*.xml'
   - stage: Deploy
     displayName: Deploy to Maven
     dependsOn: Test
     pool:
       vmImage: "ubuntu-latest"
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      - group: deploy-variables
     jobs:
       - job: Deploy
         steps:
@@ -92,18 +87,13 @@ stages:
             inputs:
               sourceFolder: $(Pipeline.Workspace)/artifacts
               targetFolder: $(Build.SourcesDirectory)
-          - task: MavenAuthenticate@0
+          - task: Gradle@2
             inputs:
-              mavenServiceConnections: 'jCenter maven'
-          - task: Maven@3
-            inputs:
-              mavenPomFile: 'pom.xml'
-              mavenOptions: '-Xmx3072m'
+              gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
+              tasks: 'publish'
               jdkArchitectureOption: 'x64'
-              mavenAuthenticateFeed: true
-              goals: 'deploy'
 
 
 

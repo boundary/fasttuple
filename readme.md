@@ -22,7 +22,7 @@ FastTuple pulls off its trick via runtime bytecode generation.  The user supplie
 <dependency>
     <groupId>com.nickrobison</groupId>
     <artifactId>fasttuple-core</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
 </dependency>
 ```
 
@@ -159,5 +159,5 @@ To run the benchmarks:
 
 ```
 mvn package
-java -jar fasttuple-bench/target/microbenchmarks.jar
+java -jar fasttuple-bench/build/microbenchmarks.jar
 ```
