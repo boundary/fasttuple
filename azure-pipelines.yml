@@ -44,15 +44,15 @@ stages:
               jdk: '1.11'
             Mac_Java8:
               jdk: '1.8'
-              imageName: 'macos-10.14'
+              imageName: 'macos-latest'
             Mac_Java11:
               jdk: '1.11'
-              imageName: 'macos-10.14'
+              imageName: 'macos-latest'
             Windows_Java8:
-              imageName: 'vs2017-win2016'
+              imageName: 'windows-latest'
               jdk: '1.8'
             Windows_Java11:
-              imageName: 'vs2017-win2016'
+              imageName: 'windows-latest'
               jdk: '1.11'
         steps:
           - download: current

@@ -3,7 +3,7 @@ plugins {
     signing
     `maven-publish`
     jacoco
-    id("org.sonarqube") version "2.8"
+    id("org.sonarqube") version "3.0"
 }
 
 val janinoVersion by extra("3.1.0")
@@ -33,7 +33,7 @@ allprojects {
     dependencies {
         val implementation by configurations
         implementation("org.codehaus.janino:janino:$janinoVersion")
-        implementation("com.google.guava:guava:28.0-jre")
+        implementation("com.google.guava:guava:30.1-jre")
     }
 
     tasks.jacocoTestReport {

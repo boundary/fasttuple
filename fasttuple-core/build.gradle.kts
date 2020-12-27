@@ -1,4 +1,4 @@
-val junitVersion = "5.6.1"
+val junitVersion = "5.7.0"
 
 dependencies {
     implementation("org.codehaus.janino:commons-compiler:${rootProject.ext.get("janinoVersion")}")
