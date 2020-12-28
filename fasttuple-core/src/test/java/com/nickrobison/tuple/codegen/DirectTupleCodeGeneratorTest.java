@@ -103,6 +103,16 @@ public class DirectTupleCodeGeneratorTest {
     }
 
     @Test
+    public void testUnsupportedType() {
+        final DirectTupleSchema.Builder builder = TupleSchema.builder().
+                addField("a", Void.TYPE).
+                directMemory();
+
+        final IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, builder::build, "Should throw with unsupported type");
+        assertEquals("Unsupported type: void", ex.getLocalizedMessage(), "Should have correct message");
+    }
+
+    @Test
     public void testInterfaceIsImplemented() throws Exception {
         TupleSchema schema = TupleSchema.builder().
                 addField("a", Long.TYPE).

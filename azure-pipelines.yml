@@ -15,7 +15,7 @@ stages:
             inputs:
               gradleOptions: '-Xmx3072m'
               javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '1.8'
+              jdkVersionOption: '1.11'
               tasks: 'build jacocoTestReport'
               sonarQubeRunAnalysis: true
               sqGradlePluginVersionChoice: 'build'
@@ -39,9 +39,9 @@ stages:
       - job: Test
         strategy:
           matrix:
-            Linux_Java11:
+            Linux_Java8:
               imageName: 'ubuntu-latest'
-              jdk: '1.11'
+              jdk: '1.8'
             Mac_Java8:
               jdk: '1.8'
               imageName: 'macos-latest'

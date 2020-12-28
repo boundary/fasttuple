@@ -1,9 +1,7 @@
 package com.nickrobison.tuple;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-
 import java.util.ArrayDeque;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -11,7 +9,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class TuplePool<T> {
     private final ThreadLocal<ArrayDeque<T>> pool;
-    private final Optional<Function<T,Void>> initializer;
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private final Optional<Initializer<T>> initializer;
     private final Loader<T> loader;
     private final Destroyer<T> destroyer;
     private final CopyOnWriteArrayList<T[]> references;
@@ -31,22 +30,19 @@ public class TuplePool<T> {
                      boolean createWhenExhausted,
                      Loader<T> loader,
                      Destroyer<T> destroyer,
-                     Function<T,Void> initializer) {
+                     Initializer<T> initializer) {
         this.size = 0;
         this.reloadSize = size;
         this.createWhenExhausted = createWhenExhausted;
         this.references = new CopyOnWriteArrayList<>();
         this.loader = loader;
         this.destroyer = destroyer;
-        this.initializer = Optional.fromNullable(initializer);
-        this.pool = new ThreadLocal<ArrayDeque<T>>() {
-            @Override
-            protected ArrayDeque<T> initialValue() {
-                ArrayDeque<T> deque = new ArrayDeque<>(size);
-                reload(deque);
-                return deque;
-            }
-        };
+        this.initializer = Optional.ofNullable(initializer);
+        this.pool = ThreadLocal.withInitial(() -> {
+            ArrayDeque<T> deque = new ArrayDeque<>(size);
+            reload(deque);
+            return deque;
+        });
     }
 
     public T checkout() {
@@ -66,9 +62,7 @@ public class TuplePool<T> {
     }
 
     private void initialize(T obj) {
-        if (initializer.isPresent()) {
-            initializer.get().apply(obj);
-        }
+        initializer.ifPresent(tInitializer -> tInitializer.initialize(obj));
     }
 
     private void possiblyReload(ArrayDeque<T> deque) {

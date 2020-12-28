@@ -6,6 +6,13 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
+apply(plugin = "info.solidsoft.pitest")
+
+configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
+    junit5PluginVersion.set("0.12")
+    targetClasses.add("com.nickrobison.tuple.*")
+}
+
 tasks.test {
     useJUnitPlatform()
 }

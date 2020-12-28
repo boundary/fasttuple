@@ -14,8 +14,8 @@ import static com.nickrobison.tuple.codegen.CodegenUtil.*;
 public class TupleAllocatorGenerator extends ClassBodyEvaluator {
     private static final String packageName = "com.nickrobison.tuple";
 
-    public static interface TupleAllocator {
-        public FastTuple allocate();
+    public interface TupleAllocator {
+        FastTuple allocate();
     }
 
     private final Class allocatorClass;

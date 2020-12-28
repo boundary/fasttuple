@@ -4,6 +4,7 @@ plugins {
     `maven-publish`
     jacoco
     id("org.sonarqube") version "3.0"
+    id("info.solidsoft.pitest") version "1.5.2" apply (false)
 }
 
 val janinoVersion by extra("3.1.0")

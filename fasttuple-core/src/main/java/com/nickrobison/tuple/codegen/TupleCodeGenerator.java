@@ -252,7 +252,7 @@ public abstract class TupleCodeGenerator extends ClassBodyEvaluator {
         if (type.equals(Byte.TYPE)) return "Byte";
         if (type.equals(Float.TYPE)) return "Float";
         if (type.equals(Double.TYPE)) return "Double";
-        return null;
+        throw new IllegalArgumentException(String.format("Unsupported type: %s", type.getSimpleName()));
     }
 
     protected Java.SwitchStatement.SwitchBlockStatementGroup generateDefaultCase() {

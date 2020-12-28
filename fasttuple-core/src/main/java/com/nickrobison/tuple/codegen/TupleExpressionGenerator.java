@@ -29,7 +29,7 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
     }
 
     public static interface IntTupleExpression {
-        public long evaluate(FastTuple tuple);
+        public int evaluate(FastTuple tuple);
     }
 
     public static interface ShortTupleExpression {
@@ -45,11 +45,11 @@ public class TupleExpressionGenerator extends ClassBodyEvaluator {
     }
 
     public static interface FloatTupleExpression {
-        public byte evaluate(FastTuple tuple);
+        public float evaluate(FastTuple tuple);
     }
 
     public static interface DoubleTupleExpression {
-        public byte evaluate(FastTuple tuple);
+        public double evaluate(FastTuple tuple);
     }
 
     public static interface BooleanTupleExpression {

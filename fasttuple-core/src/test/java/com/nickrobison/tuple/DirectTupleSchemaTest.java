@@ -55,6 +55,14 @@ public class DirectTupleSchemaTest {
                 build();
 
         //layout should be aLong, aDouble, aInt, aFloat, aChar, aShort, aByte
+        int[] layout = schema.getLayout();
+        assertEquals(0, layout[5]);
+        assertEquals(8, layout[6]);
+        assertEquals(16, layout[2]);
+        assertEquals(20, layout[4]);
+        assertEquals(24, layout[1]);
+        assertEquals(26, layout[3]);
+        assertEquals(28, layout[0]);
         //default pad to long word
         assertEquals(64, schema.getByteSize());
     }
