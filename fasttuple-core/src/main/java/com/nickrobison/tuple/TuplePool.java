@@ -96,5 +96,6 @@ public class TuplePool<T> {
             destroyer.destroyArray(ary);
         }
         references.clear();
+        pool.remove();
     }
 }

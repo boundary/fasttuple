@@ -25,7 +25,7 @@ public class FastObjectPool<T> {
     private final long ASHIFT;
 
     public ReentrantLock lock = new ReentrantLock();
-    private ThreadLocal<Holder<T>> localValue = new ThreadLocal<Holder<T>>();
+    private ThreadLocal<Holder<T>> localValue = new ThreadLocal<>();
 
     @SuppressWarnings("unchecked")
     public FastObjectPool(PoolFactory<T> factory , int size)
@@ -40,13 +40,13 @@ public class FastObjectPool<T> {
         objects = new Holder[size];
         for(int x=0;x<size;x++)
         {
-            objects[x] = new Holder<T>(factory.create());
+            objects[x] = new Holder<>(factory.create());
         }
         mask = size-1;
         releasePointer = size;
         BASE = THE_UNSAFE.arrayBaseOffset(Holder[].class);
         INDEXSCALE = THE_UNSAFE.arrayIndexScale(Holder[].class);
-        ASHIFT = 31 - Integer.numberOfLeadingZeros((int) INDEXSCALE);
+        ASHIFT = 31L - Integer.numberOfLeadingZeros((int) INDEXSCALE);
     }
 
     public Holder<T> take()
@@ -103,15 +103,14 @@ public class FastObjectPool<T> {
         }
     }
 
-    public static class Holder<T>
-    {
+    public static class Holder<T> {
         private T value;
-        public static final int FREE=0;
-        public static final int USED=1;
+        public static final int FREE = 0;
+        public static final int USED = 1;
 
         private AtomicInteger state = new AtomicInteger(FREE);
-        public Holder(T value)
-        {
+
+        public Holder(T value) {
             this.value = value;
         }
 
@@ -120,30 +119,22 @@ public class FastObjectPool<T> {
         }
     }
 
-    public static interface PoolFactory<T>
-    {
-        public T create();
+    public interface PoolFactory<T> {
+        T create();
     }
 
     public static final Unsafe THE_UNSAFE;
-    static
-    {
-        try
-        {
-            final PrivilegedExceptionAction<Unsafe> action = new PrivilegedExceptionAction<Unsafe>()
-            {
-                public Unsafe run() throws Exception
-                {
-                    Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-                    theUnsafe.setAccessible(true);
-                    return (Unsafe) theUnsafe.get(null);
-                }
+
+    static {
+        try {
+            final PrivilegedExceptionAction<Unsafe> action = () -> {
+                Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+                theUnsafe.setAccessible(true);
+                return (Unsafe) theUnsafe.get(null);
             };
 
             THE_UNSAFE = AccessController.doPrivileged(action);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new RuntimeException("Unable to load unsafe", e);
         }
     }

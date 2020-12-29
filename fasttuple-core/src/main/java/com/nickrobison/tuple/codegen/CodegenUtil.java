@@ -9,6 +9,10 @@ import org.codehaus.janino.Java;
  */
 public final class CodegenUtil {
 
+    private CodegenUtil() {
+        // Not used
+    }
+
     public static final String PUBLIC = "public";
 
     public static Java.ConstructorDeclarator nullConstructor(Location loc) {

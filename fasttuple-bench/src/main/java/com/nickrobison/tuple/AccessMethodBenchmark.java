@@ -24,15 +24,15 @@ public class AccessMethodBenchmark {
     private DirectTupleSchema schema;
     private static final Unsafe unsafe = Coterie.unsafe();
     private BlockingQueue<Container> containers;
-    private PoolSettings<Container> poolSettings = new PoolSettings<Container>(
+    private PoolSettings<Container> poolSettings = new PoolSettings<>(
             new PoolableObjectBase<Container>() {
                 @Override
-                public Container make() throws PoolException {
-                    return new Container(0,0,(short)0);
+                public Container make() {
+                    return new Container(0, 0, (short) 0);
                 }
 
                 @Override
-                public void activate(Container container) throws PoolException {
+                public void activate(Container container) {
                     container.a = 0;
                     container.b = 0;
                     container.c = 0;
@@ -55,8 +55,8 @@ public class AccessMethodBenchmark {
 
     public AccessMethodBenchmark() {
         try {
-            containers = new ArrayBlockingQueue<Container>(100);
-            containers.offer(new Container(0,0,(short)0));
+            containers = new ArrayBlockingQueue<>(100);
+            containers.offer(new Container(0, 0, (short) 0));
             schema = TupleSchema.builder().
                     addField("a", Long.TYPE).
                     addField("b", Integer.TYPE).
@@ -67,28 +67,17 @@ public class AccessMethodBenchmark {
             record2 = schema.createRecord();
             poolSettings.min(1).max(10);
             pool = poolSettings.pool();
-            pool2 = new FastObjectPool<Container>(new FastObjectPool.PoolFactory<Container>() {
-                @Override
-                public Container create() {
-                    return new Container(0,0,(short)0);
-                }
-            }, 10);
-            pool3 = new TuplePool<Container>(10, false,
-                    new Loader<Container>() {
-                        @Override
-                        public Container[] createArray(int size) throws Exception {
-                            Container[] ary = new Container[size];
-                            for (int i=0; i<ary.length; i++) {
-                                ary[i] = new Container(0,0,(short)0);
-                            }
-                            return ary;
+            pool2 = new FastObjectPool<>(() -> new Container(0, 0, (short) 0), 10);
+            pool3 = new TuplePool<>(10, false,
+                    size -> {
+                        Container[] ary = new Container[size];
+                        for (int i = 0; i < ary.length; i++) {
+                            ary[i] = new Container(0, 0, (short) 0);
                         }
+                        return ary;
                     },
-                    new Destroyer<Container>() {
-                        @Override
-                        public void destroyArray(Container[] ary) {
+                    ary -> {
 
-                        }
                     }
             );
 
@@ -102,7 +91,7 @@ public class AccessMethodBenchmark {
             mhga = new ConstantCallSite(lookup.findGetter(Container.class, "a", Long.TYPE));
             mhgb = new ConstantCallSite(lookup.findGetter(Container.class, "b", Integer.TYPE));
             mhgc = new ConstantCallSite(lookup.findGetter(Container.class, "c", Short.TYPE));
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }
@@ -129,7 +118,7 @@ public class AccessMethodBenchmark {
 
     @Benchmark
 public long testOffheapAllocateAndSet() {
-    long record = unsafe.allocateMemory(8 + 4 + 2);
+        long record = unsafe.allocateMemory(8 + 4 + 2L);
     unsafe.putLong(record, 100);
     unsafe.putInt(record+8, 200);
     unsafe.putShort(record+12, (short)300);
@@ -140,10 +129,10 @@ public long testOffheapAllocateAndSet() {
 
     @Benchmark
     public long testOffheapDirectSet() {
-        unsafe.putLong(record2 + 0L, 100);
+        unsafe.putLong(record2, 100);
         unsafe.putInt(record2 + 8L, 200);
         unsafe.putShort(record2 + 12L, (short)300);
-        return unsafe.getLong(record2 + 0L) + unsafe.getInt(record2 + 8L) + unsafe.getShort(record2 + 12L);
+        return unsafe.getLong(record2) + unsafe.getInt(record2 + 8L) + unsafe.getShort(record2 + 12L);
     }
 
     @Benchmark
@@ -157,7 +146,7 @@ public long testOffheapAllocateAndSet() {
 
     @Benchmark
     public long testStormTuple() {
-        List<Long> list = new ArrayList<Long>();
+        List<Long> list = new ArrayList<>();
         list.add(100L);
         list.add(200L);
         list.add(300L);
@@ -226,7 +215,7 @@ public long testOffheapAllocateAndSet() {
     }
 
     @Benchmark
-    public long testTuplePool() throws Exception {
+    public long testTuplePool() {
         Container container = pool3.checkout();
         container.a = 100;
         container.b = 200;
@@ -237,16 +226,16 @@ public long testOffheapAllocateAndSet() {
     }
 
     @Benchmark
-    public long testFastTuplePreAllocIndexedBoxing() throws Exception {
+    public long testFastTuplePreAllocIndexedBoxing() {
         FastTuple tuple = schema.createTuple(record2);
         tuple.set(1, 100L);
         tuple.set(2, 200);
         tuple.set(3, (short) 300);
-        return (Long)tuple.get(1) + (Integer)tuple.get(2) + (Short)tuple.get(3);
+        return (Long) tuple.get(1) + (Integer) tuple.get(2) + (Short) tuple.get(3);
     }
 
     @Benchmark
-    public long testFastTuplePreAllocIndexed() throws Exception {
+    public long testFastTuplePreAllocIndexed() {
         FastTuple tuple = schema.createTuple(record2);
         tuple.setLong(1, 100L);
         tuple.setInt(2, 200);
@@ -255,23 +244,27 @@ public long testOffheapAllocateAndSet() {
     }
 
     @Benchmark
-    public long testFastTupleStaticBinding() throws Exception {
-        StaticBinding tuple = (StaticBinding)schema.createTuple(record2);
+    public long testFastTupleStaticBinding() {
+        StaticBinding tuple = (StaticBinding) schema.createTuple(record2);
         tuple.a(100L);
         tuple.b(200);
-        tuple.c((short)300);
+        tuple.c((short) 300);
         return tuple.a() + tuple.b() + tuple.c();
     }
 
 
+    public interface StaticBinding {
+        void a(long a);
 
-    public static interface StaticBinding {
-        public void a(long a);
-        public void b(int b);
-        public void c(short c);
-        public long a();
-        public int b();
-        public short c();
+        void b(int b);
+
+        void c(short c);
+
+        long a();
+
+        int b();
+
+        short c();
     }
 
 }

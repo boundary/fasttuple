@@ -5,6 +5,7 @@ plugins {
     jacoco
     id("org.sonarqube") version "3.0"
     id("info.solidsoft.pitest") version "1.5.2" apply (false)
+    id("net.researchgate.release") version "2.8.1"
 }
 
 val janinoVersion by extra("3.1.0")
