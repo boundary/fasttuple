@@ -11,8 +11,6 @@ plugins {
 val janinoVersion by extra("3.1.0")
 
 allprojects {
-    group = "com.nickrobison"
-    version = "0.3.2-SNAPSHOT"
     val isRelease = !version.toString().endsWith("SNAPSHOT")
 
     apply(plugin = "signing")
@@ -22,7 +20,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     java {
@@ -53,15 +51,15 @@ allprojects {
         repositories {
             maven {
                 credentials {
-                    val bintrayUsername: String? by project
-                    val bintrayPassword: String? by project
-                    username = bintrayUsername ?: System.getenv("BINTRAY_USER")
-                    password = bintrayPassword ?: System.getenv("BINTRAY_APIKEY")
+                    val sonatypeUsername: String? by project
+                    val sonatypePassword: String? by project
+                    username = sonatypeUsername ?: System.getenv("MAVEN_USER")
+                    password = sonatypePassword ?: System.getenv("MAVEN_PASSWORD")
                 }
-                val releasesRepoUrl = "https://api.bintray.com/maven/nickrobison/maven/fasttuple/;publish=1"
-                val snapshotsRepoUrl = "http://oss.jfrog.org/artifactory/oss-snapshot-local"
+                val releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                val snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
                 url = uri(if (isRelease) releasesRepoUrl else snapshotsRepoUrl)
-                name = "bintray-nickrobison-maven"
+                name = "maven-central"
             }
         }
     }
