@@ -1,5 +1,5 @@
 plugins {
-    java
+    `java-library`
     signing
     `maven-publish`
     jacoco
@@ -16,7 +16,7 @@ allprojects {
 
     apply(plugin = "signing")
     apply(plugin = "org.sonarqube")
-    apply(plugin = "java")
+    apply(plugin = "java-library")
     apply(plugin = "jacoco")
     apply(plugin = "maven-publish")
 
@@ -33,7 +33,8 @@ allprojects {
 
     dependencies {
         val implementation by configurations
-        implementation("org.codehaus.janino:janino:$janinoVersion")
+        val api by configurations
+        api("org.codehaus.janino:janino:$janinoVersion")
         implementation("com.google.guava:guava:30.1-jre")
     }
 
